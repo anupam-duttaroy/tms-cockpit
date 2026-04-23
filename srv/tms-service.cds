@@ -2,12 +2,18 @@ using {com.logistics.shipment as my} from '../db/schema';
 
 service ShipmentService {
     @odata.draft.enabled
-    entity Deliveries as projection on my.Deliveries;
+    entity Deliveries as projection on my.Deliveries
+        actions {
+            @Common.SideEffects: {TargetEntities: ['/ShipmentService.EntityContainer/Deliveries/billingDocument']}
+            action createBilling() returns String;
+        };
 
     action updateShipmentStatus(shipmentNumber: String,
                                 shipmentStatus: String,
                                 fileName: String,
                                 fileContent: String) returns String;
+
+
 }
 
 
