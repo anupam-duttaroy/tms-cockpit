@@ -12,6 +12,7 @@ modules:
   - name: tms-cockpit-attachments
   - name: tms-cockpit-malware-scanner
   - name: tms-cockpit-destination
+  - name: tms-cockpit-connectivity
   provides:
   - name: srv-api
     properties:
@@ -144,6 +145,11 @@ resources:
     service: html5-apps-repo
     service-name: tms-cockpit-html5-app-host-service
     service-plan: app-host
+- name: tms-cockpit-connectivity
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: connectivity
+    service-plan: lite    
 parameters:
   deploy_mode: html5-repo
   enable-parallel-deployments: true

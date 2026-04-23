@@ -6,7 +6,8 @@
     "@cap-js/hana": "^2",
     "@sap/cds": "^9",
     "@sap/xssec": "^4",
-    "passport": "^0.7.0"
+    "passport": "^0.7.0",
+    "sap-cf-mailer": "^0.0.5"
   },
   "devDependencies": {
     "@cap-js/sqlite": "^2",
@@ -41,7 +42,13 @@
         "auth": "xsuaa"
       },
       "destinations": true,
-      "malware-scanner": true
+      "malware-scanner": true,
+      "connectivity": true
+    },
+    "server": {
+      "body_parser": {
+        "limit": "10mb"
+      }
     }
   },
   "workspaces": [

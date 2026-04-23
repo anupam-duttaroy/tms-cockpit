@@ -11,6 +11,11 @@ service ShipmentService {
         action createShipment() returns String;
     };
 
+    action updateShipmentStatus(shipmentNumber: String,
+                                shipmentStatus: String,
+                                fileName: String,
+                                fileContent: String) returns String;
+
     entity Items as projection on my.Items;
 }
 
