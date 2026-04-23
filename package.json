@@ -29,6 +29,9 @@
       "[development]": {
         "db": {
           "kind": "sqlite",
+          "users": {
+            "User01": {}
+          },
           "credentials": {
             "url": "db.sqlite"
           }
