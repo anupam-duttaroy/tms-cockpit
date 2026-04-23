@@ -1,10 +1,14 @@
 namespace com.logistics.shipment;
 
-using { cuid, managed } from '@sap/cds/common';
+using {
+    cuid,
+    managed
+} from '@sap/cds/common';
 using {Attachments} from '@cap-js/attachments';
 
 entity Deliveries : cuid, managed {
     deliveryID            : String(10) @title: 'Delivery';
+    billingDocument      : String(10)  @title: 'Billing Document';
     source                : String(100) @title: 'Source';
     destination           : String(100) @title: 'Destination';
     plant                 : String(4) @title: 'Plant';

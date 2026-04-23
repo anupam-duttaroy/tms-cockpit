@@ -1,72 +1,80 @@
-using { com.logistics.shipment as my } from '../db/schema';
+using {com.logistics.shipment as my} from '../db/schema';
 
 service ShipmentService {
     @odata.draft.enabled
-    entity Deliveries as projection on my.Deliveries actions {
-        // Action to create a shipment for multiple selected deliveries
-        @(
-            cds.odata.bindingparameter.name : '_it',
-            Common.SideEffects              : {TargetProperties : ['_it/shipmentStatus', '_it/shipmentNumber']}
-        )
-        action createShipment() returns String;
-    };
+    entity Deliveries as projection on my.Deliveries
+        actions {
+            // Action to create a shipment for multiple selected deliveries
+            @(
+                cds.odata.bindingparameter.name: '_it',
+                Common.SideEffects             : {TargetProperties: [
+                    '_it/shipmentStatus',
+                    '_it/shipmentNumber'
+                ]}
+            )
+            action createShipment() returns String;
+
+            @(
+                cds.odata.bindingparameter.name: '_it',
+                Common.SideEffects             : {TargetProperties: ['_it/billingDocument']}
+            )
+            action createBilling()  returns String;
+        };
 
     action updateShipmentStatus(shipmentNumber: String,
                                 shipmentStatus: String,
                                 fileName: String,
                                 fileContent: String) returns String;
 
-    entity Items as projection on my.Items;
+    entity Items      as projection on my.Items;
 }
 
-annotate ShipmentService.Items with @(
-    UI.LineItem : [
-        { Value: product },
-        { Value: quantity },
-        { Value: serialNumber },
-        { Value: grossWeight },
-        { Value: salesOrder }
-    ]
-);
+annotate ShipmentService.Items with @(UI.LineItem: [
+    {Value: product},
+    {Value: quantity},
+    {Value: serialNumber},
+    {Value: grossWeight},
+    {Value: salesOrder}
+]);
 
 annotate ShipmentService.Deliveries with @(
     // Data Point for Shipment Status
-    UI.DataPoint #Status : {
-        Value : shipmentStatus,
-        Title : 'Shipment Status',
-        Criticality : criticality 
+    UI.DataPoint #Status       : {
+        Value      : shipmentStatus,
+        Title      : 'Shipment Status',
+        Criticality: criticality
     },
     // Data Point for Leg Type
-    UI.DataPoint #LegType : {
-        Value : legType,
-        Title : 'Leg Type'
+    UI.DataPoint #LegType      : {
+        Value: legType,
+        Title: 'Leg Type'
     },
     // Data Point for Leg Type
-    UI.DataPoint #SourceLoc : {
-        Value : source,
-        Title : 'Source'
+    UI.DataPoint #SourceLoc    : {
+        Value: source,
+        Title: 'Source'
     },
     // Data Point for Leg Type
-    UI.DataPoint #DestLoc : {
-        Value : destination,
-        Title : 'Destination'
+    UI.DataPoint #DestLoc      : {
+        Value: destination,
+        Title: 'Destination'
     },
     // Data Point for Remaining Legs
-    UI.DataPoint #RemainingLegs : {
-        Value : remainingLegs,
-        Title : 'Legs Remaining'
+    UI.DataPoint #RemainingLegs: {
+        Value: remainingLegs,
+        Title: 'Legs Remaining'
     },
     // Data Point for Last Update (using the managed 'modifiedAt' field)
-    UI.DataPoint #LastLoc : {
-        Value : lastLocation,
-        Title : 'Last Location'
+    UI.DataPoint #LastLoc      : {
+        Value: lastLocation,
+        Title: 'Last Location'
     },
     // Data Point for Last Update (using the managed 'modifiedAt' field)
-    UI.DataPoint #LastUpdate : {
-        Value : lastLocationDateTime,
-        Title : 'Last Location Update'
+    UI.DataPoint #LastUpdate   : {
+        Value: lastLocationDateTime,
+        Title: 'Last Location Update'
     },
-    UI.HeaderFacets : [
+    UI.HeaderFacets            : [
         {
             $Type : 'UI.ReferenceFacet',
             ID    : 'StatusHeader',
@@ -103,94 +111,144 @@ annotate ShipmentService.Deliveries with @(
             Target: '@UI.DataPoint#LastUpdate'
         }
     ],
-    
-    UI.LineItem : {
-        @UI.Criticality:criticality,
+
+    UI.LineItem                : {
+        @UI.Criticality: criticality,
         // Add the Action Button to the Table Toolbar
-        $value: [{
-            $Type  : 'UI.DataFieldForAction',
-            Label  : 'Create Shipment',
-            Action : 'ShipmentService.createShipment',
-            InvocationGrouping : #ChangeSet // Ensures all IDs are sent in one request
-        },
-        { $Type                    : 'UI.DataField',
-          Value                    : deliveryID},
-        { $Type: 'UI.DataField', Value: customer },
-        { $Type: 'UI.DataField', Value: plnPickUpDate },
-        { $Type: 'UI.DataField', Value: shipmentNumber },
-        { $Type: 'UI.DataField', Value: shipmentStatus },
-        { $Type: 'UI.DataField', Value: carrier },
-        { $Type: 'UI.DataField', Value: plnDeliveryDate },
-        { $Type: 'UI.DataField', Value: estDeliveryDate },
-        { $Type: 'UI.DataField', Value: destination },
-        { $Type: 'UI.DataField', Value: pickUpDate }
-    ]
+        $value         : [
+            {
+                $Type             : 'UI.DataFieldForAction',
+                Label             : 'Create Shipment',
+                Action            : 'ShipmentService.createShipment',
+                InvocationGrouping: #ChangeSet // Ensures all IDs are sent in one request
+            },
+            {
+                $Type             : 'UI.DataFieldForAction',
+                Label             : 'Create Billing',
+                Action            : 'ShipmentService.createBilling',
+                InvocationGrouping: #ChangeSet // Ensures all IDs are sent in one request
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: deliveryID
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: billingDocument
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: customer
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: plnPickUpDate
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: shipmentNumber
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: shipmentStatus
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: carrier
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: plnDeliveryDate
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: estDeliveryDate
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: destination
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: pickUpDate
+            }
+        ]
     },
-    UI.SelectionFields : [ deliveryID, shipmentNumber, plant, shipmentStatus ],
-    UI.HeaderInfo : {
-        TypeName: 'Delivery',
+    UI.SelectionFields         : [
+        deliveryID,
+        shipmentNumber,
+        plant,
+        shipmentStatus
+    ],
+    UI.HeaderInfo              : {
+        TypeName      : 'Delivery',
         TypeNamePlural: 'Deliveries',
-        Title: { Value: deliveryID },
-        Description: { Value: shipmentNumber }
+        Title         : {Value: deliveryID},
+        Description   : {Value: shipmentNumber}
     },
-    UI.Facets : [
+    UI.Facets                  : [
         {
-            $Type: 'UI.CollectionFacet',
-            Label: 'Shipment Details',
-            ID: 'ShipmentDetails',
+            $Type : 'UI.CollectionFacet',
+            Label : 'Shipment Details',
+            ID    : 'ShipmentDetails',
             Facets: [
-                { $Type: 'UI.ReferenceFacet', Label: 'General Info', Target: '@UI.FieldGroup#General' },
+                {
+                    $Type : 'UI.ReferenceFacet',
+                    Label : 'General Info',
+                    Target: '@UI.FieldGroup#General'
+                },
                 // { $Type: 'UI.ReferenceFacet', Label: 'Logistics Info', Target: '@UI.FieldGroup#Logistics' },
-                { $Type: 'UI.ReferenceFacet', Label: 'Systems & Terms', Target: '@UI.FieldGroup#Terms' },
-                { $Type  : 'UI.ReferenceFacet', Label  : 'Timeline & Dates', ID     : 'DatesSection', Target : '@UI.FieldGroup#DatesGroup'}
+                {
+                    $Type : 'UI.ReferenceFacet',
+                    Label : 'Systems & Terms',
+                    Target: '@UI.FieldGroup#Terms'
+                },
+                {
+                    $Type : 'UI.ReferenceFacet',
+                    Label : 'Timeline & Dates',
+                    ID    : 'DatesSection',
+                    Target: '@UI.FieldGroup#DatesGroup'
+                }
             ]
         },
         {
-            $Type: 'UI.ReferenceFacet',
-            Label: 'Delivery Items',
+            $Type : 'UI.ReferenceFacet',
+            Label : 'Delivery Items',
             Target: 'items/@UI.LineItem'
         }
     ],
-    UI.FieldGroup #General : {
-        Data : [
-            { Value: deliveryID },
-            { Value: customer },
-            { Value: endCustomer },
-            { Value: plant },
-            { Value: shipmentStatus },
-            // { Value: packedDate }
-        ]
-    },
-    UI.FieldGroup #Logistics : {
-        Data : [
-            { Value: shipmentNumber },
-            { Value: shipmentStatus },
-            { Value: source },
-            { Value: destination },
-            // { Value: pickUpDate },
-            // { Value: estDeliveryDate },
-            // { Value: lastLocation },
-            // { Value: lastLocationDateTime },
-            { Value: legType },
-            { Value: remainingLegs }
-        ]
-    },
-    UI.FieldGroup #Terms : {
-        Data : [
-            { Value: carrier },
-            { Value: incoterms },
-            { Value: incoterms2 },
-            { Value: systemName }
-        ]
-    },
-    UI.FieldGroup #DatesGroup : {
-        Data : [
-            { Value: plnPickUpDate },
-            { Value: pickUpDate },
-            { Value: packedDate },
-            { Value: plnDeliveryDate },
-            { Value: estDeliveryDate },
-            { Value: lastLocationDateTime }
-        ]
-    }
+    UI.FieldGroup #General     : {Data: [
+        {Value: deliveryID},
+        {Value: customer},
+        {Value: endCustomer},
+        {Value: plant},
+        {Value: shipmentStatus},
+    // { Value: packedDate }
+    ]},
+    UI.FieldGroup #Logistics   : {Data: [
+        {Value: shipmentNumber},
+        {Value: shipmentStatus},
+        {Value: source},
+        {Value: destination},
+        // { Value: pickUpDate },
+        // { Value: estDeliveryDate },
+        // { Value: lastLocation },
+        // { Value: lastLocationDateTime },
+        {Value: legType},
+        {Value: remainingLegs}
+    ]},
+    UI.FieldGroup #Terms       : {Data: [
+        {Value: carrier},
+        {Value: incoterms},
+        {Value: incoterms2},
+        {Value: systemName}
+    ]},
+    UI.FieldGroup #DatesGroup  : {Data: [
+        {Value: plnPickUpDate},
+        {Value: pickUpDate},
+        {Value: packedDate},
+        {Value: plnDeliveryDate},
+        {Value: estDeliveryDate},
+        {Value: lastLocationDateTime}
+    ]}
 );

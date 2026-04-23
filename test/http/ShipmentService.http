@@ -14,6 +14,17 @@ Authorization: Basic {{username}}:{{password}}
 }
 
 
+### createBilling
+# @name createBilling_POST
+POST {{server}}/odata/v4/shipment/createBilling
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "shipmentNumber": "8001004"
+}
+
+
 ### Deliveries
 # @name Deliveries_GET
 GET {{server}}/odata/v4/shipment/Deliveries?$count=true
