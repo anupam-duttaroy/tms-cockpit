@@ -7,25 +7,43 @@ using {
 using {Attachments} from '@cap-js/attachments';
 
 entity Deliveries : cuid, managed {
-    deliveryID           : String(10)  @title: 'Delivery';
+    deliveryID            : String(10) @title: 'Delivery';
     billingDocument      : String(10)  @title: 'Billing Document';
-    source               : String(100) @title: 'Source';
-    destination          : String(100) @title: 'Destination';
-    plant                : String(4)   @title: 'Plant';
-    packedDate           : Date        @title: 'Packed Date';
-    customer             : String(100) @title: 'Customer';
-    shipmentNumber       : String(20)  @title: 'Shipment Number';
-    shipmentStatus       : String(20)  @title: 'Shipment Status';
-    pickUpDate           : DateTime    @title: 'Pick Up Date';
-    estDeliveryDate      : DateTime    @title: 'Estimated Delivery Date';
-    carrier              : String(100) @title: 'Carrier';
-    incoterms            : String(3)   @title: 'Incoterms';
-    incoterms2           : String(50)  @title: 'Incoterms 2';
-    lastLocation         : String(100) @title: 'Last Location';
-    lastLocationDateTime : DateTime    @title: 'Last Location Date/Time';
-    systemName           : String(50)  @title: 'System Name';
-    endCustomer          : String(100) @title: 'End Customer';
-    legType              : String(20)  @title: 'Leg Type';
-    remainingLegs        : Integer     @title: 'Remaining Legs';
-    attachments          : Composition of many Attachments;
+    source                : String(100) @title: 'Source';
+    destination           : String(100) @title: 'Destination';
+    plant                 : String(4) @title: 'Plant';
+    packedDate            : Date @title: 'Packed Date';
+    customer              : String(100) @title: 'Customer';
+    shipmentNumber        : String(20) @title: 'Shipment Number';
+    shipmentStatus        : String(20) @title: 'Shipment Status';
+    plnPickUpDate         : DateTime @title: 'Planned Pick Up Date';
+    pickUpDate            : DateTime @title: 'Actual Pick Up Date';
+    plnDeliveryDate       : DateTime @title: 'Planned Delivery Date';
+    estDeliveryDate       : DateTime @title: 'Estimated Delivery Date';
+    carrier               : String(100) @title: 'Carrier';
+    incoterms             : String(3) @title: 'Incoterms';
+    incoterms2            : String(50) @title: 'Incoterms 2';
+    lastLocation          : String(100) @title: 'Last Location';
+    lastLocationDateTime  : DateTime @title: 'Last Location Date/Time';
+    systemName            : String(50) @title: 'System Name';
+    endCustomer           : String(100) @title: 'End Customer';
+    legType               : String(20) @title: 'Leg Type';
+    remainingLegs         : Integer @title: 'Remaining Legs';
+    virtual criticality   : Integer; 
+    items                 : Composition of many Items on items.parent = $self;
+    attachments : Composition of many Attachments;
+}
+
+entity Items : cuid, managed {
+    parent              : Association to Deliveries;
+    product             : String(50) @title: 'Product';
+    quantity            : Decimal(13, 3) @title: 'Quantity';
+    serialNumber        : String(30) @title: 'Serial Number';
+    grossWeight         : Decimal(15, 3) @title: 'Gross Weight';
+    netWeight           : Decimal(15, 3) @title: 'Net Weight';
+    sourceDocument      : String(10) @title: 'Source Document';
+    sourceDocumentItem  : String(6) @title: 'Source Item';
+    sourceDocumentType  : String(4) @title: 'Doc Type';
+    salesOrder          : String(10) @title: 'Sales Order';
+    salesOrderItem      : String(6) @title: 'SO Item';
 }

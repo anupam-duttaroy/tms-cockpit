@@ -1,0 +1,187 @@
+{
+  "_version": "1.83.0",
+  "sap.app": {
+    "id": "tmscockpitfe",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:lrop",
+      "version": "1.22.0",
+      "toolsId": "77cf2afa-452d-48e8-8716-33e02b8bf192"
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "/odata/v4/shipment/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "odataVersion": "4.01"
+        }
+      }
+    },
+    "crossNavigation": {
+      "inbounds": {
+        "tms-display": {
+          "semanticObject": "tms",
+          "action": "display",
+          "title": "{{tms-display.flpTitle}}",
+          "subTitle": "{{tms-display.flpSubtitle}}",
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          }
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.147.1",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.fe.templates": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "tmscockpitfe.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      },
+      "@i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "uri": "i18n/i18n.properties"
+      }
+    },
+    "resources": {
+      "css": []
+    },
+    "routing": {
+      "config": {},
+      "routes": [
+        {
+          "pattern": ":?query:",
+          "name": "DeliveriesList",
+          "target": "DeliveriesList"
+        },
+        {
+          "pattern": "Deliveries({key}):?query:",
+          "name": "DeliveriesObjectPage",
+          "target": "DeliveriesObjectPage"
+        },
+        {
+          "pattern": "Deliveries({key})/attachments({key2}):?query:",
+          "name": "Deliveries_attachmentsObjectPage",
+          "target": "Deliveries_attachmentsObjectPage"
+        }
+      ],
+      "targets": {
+        "DeliveriesList": {
+          "type": "Component",
+          "id": "DeliveriesList",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              "contextPath": "/Deliveries",
+              "variantManagement": "Page",
+              "navigation": {
+                "Deliveries": {
+                  "detail": {
+                    "route": "DeliveriesObjectPage"
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "DeliveriesObjectPage": {
+          "type": "Component",
+          "id": "DeliveriesObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "contextPath": "/Deliveries",
+              "navigation": {
+                "attachments": {
+                  "detail": {
+                    "route": "Deliveries_attachmentsObjectPage"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "Deliveries_attachmentsObjectPage": {
+          "type": "Component",
+          "id": "Deliveries_attachmentsObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "contextPath": "/Deliveries/attachments"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sap.fiori": {
+    "registrationIds": [],
+    "archeType": "transactional"
+  },
+  "sap.fe": {
+    "app": {
+      "enableLazyLoading": true
+    }
+  },
+  "sap.cloud": {
+    "public": true,
+    "service": "tms"
+  }
+}
