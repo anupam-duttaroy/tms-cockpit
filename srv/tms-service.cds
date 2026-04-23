@@ -1,4 +1,4 @@
-using {com.logistics.shipment as my} from '../db/schema';
+using { com.logistics.shipment as my } from '../db/schema';
 
 service ShipmentService {
     @odata.draft.enabled
@@ -175,26 +175,12 @@ annotate ShipmentService.Deliveries with @(
             { Value: remainingLegs }
         ]
     },
-    UI.Facets               : [{
-        $Type : 'UI.CollectionFacet',
-        Label : 'Shipment Details',
-        ID    : 'ShipmentDetails',
-        Facets: [
-            {
-                $Type : 'UI.ReferenceFacet',
-                Label : 'General Info',
-                Target: '@UI.FieldGroup#General'
-            },
-            {
-                $Type : 'UI.ReferenceFacet',
-                Label : 'Logistics Info',
-                Target: '@UI.FieldGroup#Logistics'
-            },
-            {
-                $Type : 'UI.ReferenceFacet',
-                Label : 'Systems & Terms',
-                Target: '@UI.FieldGroup#Terms'
-            }
+    UI.FieldGroup #Terms : {
+        Data : [
+            { Value: carrier },
+            { Value: incoterms },
+            { Value: incoterms2 },
+            { Value: systemName }
         ]
     },
     UI.FieldGroup #DatesGroup : {
