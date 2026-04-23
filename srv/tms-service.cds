@@ -4,7 +4,10 @@ service ShipmentService {
     @odata.draft.enabled
     entity Deliveries as projection on my.Deliveries;
 
-    action updateShipmentStatus(status: String) returns String;
+    action updateShipmentStatus(delivery: String,
+                                status: String,
+                                fileName: String,
+                                fileContent: String) returns String;
 }
 
 

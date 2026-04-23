@@ -11,10 +11,13 @@
   },
   "devDependencies": {
     "@cap-js/sqlite": "^2",
-    "@sap/cds-dk": "^9"
+    "@sap/cds-dk": "^9",
+    "@cap-js/cds-test": "^0"
   },
   "scripts": {
-    "start": "cds-serve"
+    "start": "cds-serve",
+    "test": "node --test",
+    "debug": "cds watch"
   },
   "private": true,
   "cds": {
@@ -22,6 +25,9 @@
       "[development]": {
         "db": {
           "kind": "sqlite",
+          "users": {
+            "User01": {}
+          },
           "credentials": {
             "url": "db.sqlite"
           }
@@ -37,6 +43,11 @@
       "destinations": true,
       "malware-scanner": true,
       "connectivity": true
+    },
+    "server": {
+      "body_parser": {
+        "limit": "10mb"
+      }
     }
   }
 }

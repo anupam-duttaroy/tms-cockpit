@@ -1,0 +1,257 @@
+@server=http://localhost:4004
+@username=user01
+@password=
+
+### updateShipmentStatus
+# @name updateShipmentStatus_POST
+POST {{server}}/odata/v4/shipment/updateShipmentStatus
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "delivery": "8001004",
+  "status": "complete"
+}
+
+
+### Deliveries
+# @name Deliveries_GET
+GET {{server}}/odata/v4/shipment/Deliveries?$count=true
+Authorization: Basic {{username}}:{{password}}
+
+
+### Deliveries Drafts GET
+# @name Deliveries_Drafts_GET
+GET {{server}}/odata/v4/shipment/Deliveries?$filter=(IsActiveEntity eq false)
+Authorization: Basic {{username}}:{{password}}
+
+
+### Deliveries Draft POST
+# @name Deliveries_Draft_POST
+POST {{server}}/odata/v4/shipment/Deliveries
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "deliveryID": "D-27708663",
+  "source": "source-27708663",
+  "destination": "destination-27708663",
+  "plant": "8663",
+  "packedDate": "2007-07-13",
+  "customer": "customer-27708663",
+  "shipmentNumber": "pmentNumber-27708663",
+  "shipmentStatus": "pmentStatus-27708663",
+  "pickUpDate": "2012-09-17T18:30:00.000Z",
+  "estDeliveryDate": "2018-06-16T18:30:00.000Z",
+  "carrier": "carrier-27708663",
+  "incoterms": "663",
+  "incoterms2": "incoterms2-27708663",
+  "lastLocation": "lastLocation-27708663",
+  "lastLocationDateTime": "2022-12-25T18:30:00.000Z",
+  "systemName": "systemName-27708663",
+  "endCustomer": "endCustomer-27708663",
+  "legType": "legType-27708663",
+  "remainingLegs": 42,
+  "attachments": [
+    {
+      "ID": "18507778-63ce-4e0b-8082-b91247130139",
+      "createdAt": "2004-02-28T18:30:00.000Z",
+      "createdBy": "createdBy.b0ooy@example.org",
+      "modifiedAt": "2017-04-07T18:30:00.000Z",
+      "modifiedBy": "modifiedBy.b0ooy@example.net",
+      "url": "url-18507778",
+      "mimeType": "mimeType-18507778",
+      "filename": "filename-18507778",
+      "hash": "hash-18507778",
+      "status": "status-18507778",
+      "statusNav": {
+        "code": "Infected"
+      },
+      "lastScan": "2001-06-17T18:30:00.000Z",
+      "note": "note-18507778"
+    },
+    {
+      "ID": "18507779-1b18-40cd-8474-397c797f07bb",
+      "createdAt": "2016-08-16T18:30:00.000Z",
+      "createdBy": "createdBy.b0ooz@example.org",
+      "modifiedAt": "2012-02-01T18:30:00.000Z",
+      "modifiedBy": "modifiedBy.b0ooz@example.org",
+      "url": "url-18507779",
+      "mimeType": "mimeType-18507779",
+      "filename": "filename-18507779",
+      "hash": "hash-18507779",
+      "status": "status-18507779",
+      "statusNav": {
+        "code": "Infected"
+      },
+      "lastScan": "2009-09-28T18:30:00.000Z",
+      "note": "note-18507779"
+    }
+  ],
+  "createdAt": "2018-02-07T18:30:00.000Z",
+  "createdBy": "createdBy.ghw53@example.com",
+  "modifiedAt": "2002-11-10T18:30:00.000Z",
+  "modifiedBy": "modifiedBy.ghw53@example.org"
+}
+
+
+### Result from POST request above
+@draftID={{Deliveries_Draft_POST.response.body.$.ID}}
+
+
+### Deliveries Draft PATCH
+# @name Deliveries_Draft_Patch
+PATCH {{server}}/odata/v4/shipment/Deliveries(ID={{draftID}},IsActiveEntity=false)
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "deliveryID": "D-27708663",
+  "source": "source-27708663",
+  "destination": "destination-27708663",
+  "plant": "8663",
+  "packedDate": "2007-07-13",
+  "customer": "customer-27708663",
+  "shipmentNumber": "pmentNumber-27708663",
+  "shipmentStatus": "pmentStatus-27708663",
+  "pickUpDate": "2012-09-17T18:30:00.000Z",
+  "estDeliveryDate": "2018-06-16T18:30:00.000Z",
+  "carrier": "carrier-27708663",
+  "incoterms": "663",
+  "incoterms2": "incoterms2-27708663",
+  "lastLocation": "lastLocation-27708663",
+  "lastLocationDateTime": "2022-12-25T18:30:00.000Z",
+  "systemName": "systemName-27708663",
+  "endCustomer": "endCustomer-27708663",
+  "legType": "legType-27708663",
+  "remainingLegs": 42,
+  "attachments": [
+    {
+      "ID": "18507778-63ce-4e0b-8082-b91247130139",
+      "createdAt": "2004-02-28T18:30:00.000Z",
+      "createdBy": "createdBy.b0ooy@example.org",
+      "modifiedAt": "2017-04-07T18:30:00.000Z",
+      "modifiedBy": "modifiedBy.b0ooy@example.net",
+      "url": "url-18507778",
+      "mimeType": "mimeType-18507778",
+      "filename": "filename-18507778",
+      "hash": "hash-18507778",
+      "status": "status-18507778",
+      "statusNav": {
+        "code": "Infected"
+      },
+      "lastScan": "2001-06-17T18:30:00.000Z",
+      "note": "note-18507778"
+    },
+    {
+      "ID": "18507779-1b18-40cd-8474-397c797f07bb",
+      "createdAt": "2016-08-16T18:30:00.000Z",
+      "createdBy": "createdBy.b0ooz@example.org",
+      "modifiedAt": "2012-02-01T18:30:00.000Z",
+      "modifiedBy": "modifiedBy.b0ooz@example.org",
+      "url": "url-18507779",
+      "mimeType": "mimeType-18507779",
+      "filename": "filename-18507779",
+      "hash": "hash-18507779",
+      "status": "status-18507779",
+      "statusNav": {
+        "code": "Infected"
+      },
+      "lastScan": "2009-09-28T18:30:00.000Z",
+      "note": "note-18507779"
+    }
+  ],
+  "createdAt": "2018-02-07T18:30:00.000Z",
+  "createdBy": "createdBy.ghw53@example.com",
+  "modifiedAt": "2002-11-10T18:30:00.000Z",
+  "modifiedBy": "modifiedBy.ghw53@example.org"
+}
+
+
+### Deliveries Draft Prepare
+# @name Deliveries_Draft_Prepare
+POST {{server}}/odata/v4/shipment/Deliveries(ID={{draftID}},IsActiveEntity=false)/ShipmentService.draftPrepare
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{}
+
+
+### Deliveries Draft Activate
+# @name Deliveries_Draft_Activate
+POST {{server}}/odata/v4/shipment/Deliveries(ID={{draftID}},IsActiveEntity=false)/ShipmentService.draftActivate
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{}
+
+
+### Deliveries.attachments
+# @name Deliveriesattachments_GET
+GET {{server}}/odata/v4/shipment/Deliveries.attachments
+Authorization: Basic {{username}}:{{password}}
+
+
+### Deliveries.attachments
+# @name Deliveriesattachments_POST
+POST {{server}}/odata/v4/shipment/Deliveries.attachments
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "ID": "18507778-63ce-4e0b-8082-b91247130139",
+  "createdAt": "2004-02-28T18:30:00.000Z",
+  "createdBy": "createdBy.b0ooy@example.org",
+  "modifiedAt": "2017-04-07T18:30:00.000Z",
+  "modifiedBy": "modifiedBy.b0ooy@example.net",
+  "url": "url-18507778",
+  "mimeType": "mimeType-18507778",
+  "filename": "filename-18507778",
+  "hash": "hash-18507778",
+  "status": "status-18507778",
+  "statusNav": {
+    "code": "Infected"
+  },
+  "lastScan": "2001-06-17T18:30:00.000Z",
+  "note": "note-18507778"
+}
+
+
+### Deliveries.attachments
+# @name Deliveriesattachments_PATCH
+PATCH {{server}}/odata/v4/shipment/Deliveries.attachments(up_=[object Object],ID=18507778-63ce-4e0b-8082-b91247130139)
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+{
+  "ID": "18507778-63ce-4e0b-8082-b91247130139",
+  "createdAt": "2004-02-28T18:30:00.000Z",
+  "createdBy": "createdBy.b0ooy@example.org",
+  "modifiedAt": "2017-04-07T18:30:00.000Z",
+  "modifiedBy": "modifiedBy.b0ooy@example.net",
+  "url": "url-18507778",
+  "mimeType": "mimeType-18507778",
+  "filename": "filename-18507778",
+  "hash": "hash-18507778",
+  "status": "status-18507778",
+  "statusNav": {
+    "code": "Infected"
+  },
+  "lastScan": "2001-06-17T18:30:00.000Z",
+  "note": "note-18507778"
+}
+
+
+### Deliveries.attachments
+# @name Deliveriesattachments_DELETE
+DELETE {{server}}/odata/v4/shipment/Deliveries.attachments(up_=[object Object],ID=18507778-63ce-4e0b-8082-b91247130139)
+Content-Type: application/json
+Authorization: Basic {{username}}:{{password}}
+
+
+### ScanStates
+# @name ScanStates_GET
+GET {{server}}/odata/v4/shipment/ScanStates
+Authorization: Basic {{username}}:{{password}}
+
+
