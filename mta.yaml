@@ -3,108 +3,114 @@ ID: tms-cockpit
 description: A simple CAP project.
 version: 1.0.0
 modules:
-- name: tms-cockpit-srv
-  type: nodejs
-  path: gen/srv
-  requires:
-  - name: tms-cockpit-auth
-  - name: tms-cockpit-db
-  - name: tms-cockpit-attachments
-  - name: tms-cockpit-malware-scanner
-  - name: tms-cockpit-destination
-  provides:
-  - name: srv-api
-    properties:
-      srv-url: ${default-url}
-  parameters:
-    buildpack: nodejs_buildpack
-    instances: 1
-  build-parameters:
-    builder: npm-ci
-- name: tms-cockpit-db-deployer
-  type: hdb
-  path: gen/db
-  requires:
-  - name: tms-cockpit-db
-  parameters:
-    buildpack: nodejs_buildpack
-- name: tms-cockpit-destination-content
-  type: com.sap.application.content
-  requires:
-  - name: tms-cockpit-destination
+  - name: tms-cockpit-srv
+    type: nodejs
+    path: gen/srv
+    requires:
+      - name: tms-cockpit-auth
+      - name: tms-cockpit-db
+      - name: tms-cockpit-attachments
+      - name: tms-cockpit-malware-scanner
+      - name: tms-cockpit-destination
+      - name: tms-cockpit-connectivity
+    provides:
+      - name: srv-api
+        properties:
+          srv-url: ${default-url}
     parameters:
-      content-target: true
-  - name: tms-cockpit_html_repo_host
+      buildpack: nodejs_buildpack
+      instances: 1
+    build-parameters:
+      builder: npm-ci
+  - name: tms-cockpit-db-deployer
+    type: hdb
+    path: gen/db
+    requires:
+      - name: tms-cockpit-db
     parameters:
-      service-key:
-        name: tms-cockpit_html_repo_host-key
-  - name: tms-cockpit-auth
+      buildpack: nodejs_buildpack
+  - name: tms-cockpit-destination-content
+    type: com.sap.application.content
+    requires:
+      - name: tms-cockpit-destination
+        parameters:
+          content-target: true
+      - name: tms-cockpit_html_repo_host
+        parameters:
+          service-key:
+            name: tms-cockpit_html_repo_host-key
+      - name: tms-cockpit-auth
+        parameters:
+          service-key:
+            name: tms-cockpit-auth-key
     parameters:
-      service-key:
-        name: tms-cockpit-auth-key
-  parameters:
-    content:
-      instance:
-        destinations:
-        - Name: tms_tms_cockpit_html_repo_host
-          ServiceInstanceName: tms-cockpit-html5-app-host-service
-          ServiceKeyName: tms-cockpit_html_repo_host-key
-          sap.cloud.service: tms
-        - Authentication: OAuth2UserTokenExchange
-          Name: tms_tms_cockpit_auth
-          ServiceInstanceName: tms-cockpit-auth
-          ServiceKeyName: tms-cockpit-auth-key
-          sap.cloud.service: tms
-        existing_destinations_policy: ignore
-  build-parameters:
-    no-source: true
+      content:
+        instance:
+          destinations:
+            - Name: tms_tms_cockpit_html_repo_host
+              ServiceInstanceName: tms-cockpit-html5-app-host-service
+              ServiceKeyName: tms-cockpit_html_repo_host-key
+              sap.cloud.service: tms
+            - Authentication: OAuth2UserTokenExchange
+              Name: tms_tms_cockpit_auth
+              ServiceInstanceName: tms-cockpit-auth
+              ServiceKeyName: tms-cockpit-auth-key
+              sap.cloud.service: tms
+          existing_destinations_policy: ignore
+    build-parameters:
+      no-source: true
 resources:
-- name: tms-cockpit-auth
-  type: org.cloudfoundry.managed-service
-  parameters:
-    config:
-      oauth2-configuration:
-        credential-types:
-        - binding-secret
-        - x509
-      tenant-mode: dedicated
-      xsappname: tms-cockpit-${org}-${space}
-    path: ./xs-security.json
-    service: xsuaa
-    service-plan: application
-- name: tms-cockpit-db
-  type: com.sap.xs.hdi-container
-  parameters:
-    service: hana
-    service-plan: hdi-shared
-- name: tms-cockpit-attachments
-  type: org.cloudfoundry.managed-service
-  parameters:
-    service: objectstore
-    service-plan: standard
-- name: tms-cockpit-malware-scanner
-  type: org.cloudfoundry.managed-service
-  parameters:
-    config:
-      auth: mTLS
-    service: malware-scanner
-    service-plan: clamav
-- name: tms-cockpit-destination
-  type: org.cloudfoundry.managed-service
-  parameters:
-    service: destination
-    service-plan: lite
-- name: tms-cockpit_html_repo_host
-  type: org.cloudfoundry.managed-service
-  parameters:
-    service: html5-apps-repo
-    service-name: tms-cockpit-html5-app-host-service
-    service-plan: app-host
+  - name: tms-cockpit-auth
+    type: org.cloudfoundry.managed-service
+    parameters:
+      config:
+        oauth2-configuration:
+          credential-types:
+            - binding-secret
+            - x509
+        tenant-mode: dedicated
+        xsappname: tms-cockpit-${org}-${space}
+      path: ./xs-security.json
+      service: xsuaa
+      service-plan: application
+  - name: tms-cockpit-db
+    type: com.sap.xs.hdi-container
+    parameters:
+      service: hana
+      service-plan: hdi-shared
+  - name: tms-cockpit-attachments
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: objectstore
+      service-plan: standard
+  - name: tms-cockpit-malware-scanner
+    type: org.cloudfoundry.managed-service
+    parameters:
+      config:
+        auth: mTLS
+      service: malware-scanner
+      service-plan: clamav
+  - name: tms-cockpit-destination
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: destination
+      service-plan: lite
+  - name: tms-cockpit_html_repo_host
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-name: tms-cockpit-html5-app-host-service
+      service-plan: app-host
+  - name: tms-cockpit-connectivity
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: connectivity
+      service-plan: lite
 parameters:
   enable-parallel-deployments: true
 build-parameters:
   before-all:
-  - builder: custom
-    commands:
-    - npm ci
-    - npx cds build --production
+    - builder: custom
+      commands:
+        - npm ci
+        - npx cds build --production
