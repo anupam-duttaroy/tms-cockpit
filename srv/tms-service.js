@@ -85,6 +85,14 @@ module.exports = cds.service.impl(async function () {
             each.criticality = 3; // Green
         }
 
+        // if (each.shipmentStatus == 'Delivered'){
+        //     console.log(each.actDeliveryDate, each.estDeliveryDate);
+        //     if (each.actDeliveryDate > each.estDeliveryDate ) each.onTimeDeliveryStatus = 1
+        //     else if (each.actDeliveryDate <= each.estDeliveryDate ) each.onTimeDeliveryStatus = 3
+        //     else each.onTimeDeliveryStatus = 2
+        // }
+        
+
     });
 
     // this.after('READ', 'Deliveries', each => {

@@ -49,7 +49,7 @@ annotate ShipmentService.Deliveries with @(
     UI.DataPoint #Status       : {
         Value      : shipmentStatus,
         Title      : 'Shipment Status',
-        Criticality: criticality
+        Criticality: onTimeDeliveryStatus
     },
     // Data Point for Leg Type
     UI.DataPoint #LegType      : {
@@ -144,6 +144,12 @@ annotate ShipmentService.Deliveries with @(
                 $Type: 'UI.DataField',
                 Value: billingDocument
             },
+            // {
+            //     $Type: 'UI.DataField',
+            //     Value: onTimeDeliveryStatus,
+            //     Criticality: onTimeDeliveryStatus,
+            //     CriticalityRepresentation: #WithIcon
+            // },
             {
                 $Type: 'UI.DataField',
                 Value: customer
@@ -158,7 +164,9 @@ annotate ShipmentService.Deliveries with @(
             },
             {
                 $Type: 'UI.DataField',
-                Value: shipmentStatus
+                Value: shipmentStatus,
+                Criticality: onTimeDeliveryStatus,
+                CriticalityRepresentation: #WithIcon
             },
             {
                 $Type: 'UI.DataField',
@@ -236,12 +244,15 @@ annotate ShipmentService.Deliveries with @(
     UI.FieldGroup #Logistics   : {Data: [
         {Value: shipmentNumber},
         {Value: shipmentStatus},
+        {Value: trackingNumber},
         {Value: source},
         {Value: destination},
         // { Value: pickUpDate },
         // { Value: estDeliveryDate },
         // { Value: lastLocation },
         // { Value: lastLocationDateTime },
+        {Value: whPickingStatus},
+        {Value: pgiStatus},
         {Value: legType},
         {Value: remainingLegs}
     ]},
@@ -253,10 +264,12 @@ annotate ShipmentService.Deliveries with @(
     ]},
     UI.FieldGroup #DatesGroup  : {Data: [
         {Value: plnPickUpDate},
+        {Value: whPickingDate},
         {Value: pickUpDate},
-        {Value: packedDate},
+        {Value: pgiDate},
         {Value: plnDeliveryDate},
         {Value: estDeliveryDate},
+        {Value: actDeliveryDate},
         {Value: lastLocationDateTime}
     ]}
 );
