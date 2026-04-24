@@ -90,7 +90,7 @@ module.exports = cds.service.impl(async function () {
             );
 
             if (!shipmentDetails) {
-                return req.error(400, "Invalid shipment Number")
+                return req.error(400, `Invalid shipment Number ${shipmentNumber}`)
             }
 
             await tx.run(UPDATE(Deliveries).set({ shipmentStatus: shipmentStatus }).where({ ID: shipmentDetails.ID }))
