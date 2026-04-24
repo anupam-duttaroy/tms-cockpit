@@ -6,17 +6,24 @@ service ShipmentService {
         actions {
             // Action to create a shipment for multiple selected deliveries
             @(
-                cds.odata.bindingparameter.name: '_it',
-                Common.SideEffects             : {TargetProperties: [
-                    '_it/shipmentStatus',
-                    '_it/shipmentNumber'
-                ]}
+                //cds.odata.bindingparameter.name: '_it',
+                Common.SideEffects     : {TargetProperties: [
+                    'in/shipmentStatus',
+                    'in/shipmentNumber'
+                ]},
+                Core.OperationAvailable: in.enableCreateShipping
             )
             action createShipment() returns String;
 
             @(
-                cds.odata.bindingparameter.name: '_it',
-                Common.SideEffects             : {TargetProperties: ['_it/billingDocument']}
+                //cds.odata.bindingparameter.name: '_it',
+                Common.SideEffects     : {TargetProperties: ['in/billingDocument']},
+                // Core.OperationAvailable: {$edmJson: {$Eq: [
+                //     {$Path: 'in/enableCreateBilling'},
+                //     true
+                // ]}},
+                Core.OperationAvailable: in.enableCreateBilling
+
             )
             action createBilling()  returns String;
         };
@@ -124,9 +131,10 @@ annotate ShipmentService.Deliveries with @(
             },
             {
                 $Type             : 'UI.DataFieldForAction',
-                Label             : 'Create Billing',
+                Label             : 'Create Commercial Invoice',
                 Action            : 'ShipmentService.createBilling',
-                InvocationGrouping: #ChangeSet // Ensures all IDs are sent in one request
+                InvocationGrouping: #ChangeSet,
+                // Ensures all IDs are sent in one request
             },
             {
                 $Type: 'UI.DataField',
