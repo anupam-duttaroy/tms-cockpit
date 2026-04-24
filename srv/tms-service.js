@@ -28,7 +28,7 @@ module.exports = cds.service.impl(async function () {
 
         // Dummy Logic: Update status to 'In Transit' for all selected items
         for (const delivery of selectedDeliveries) {
-            await UPDATE(Deliveries).set({ 
+            await UPDATE(Deliveries).set({
                 shipmentStatus: 'Shipment Created2', shipmentNumber: 'SHP-XX98',
                 pickUpDate: new Date().toISOString()
             }).where({ ID: delivery.ID })
@@ -38,36 +38,53 @@ module.exports = cds.service.impl(async function () {
     });
 
     this.after('READ', 'Deliveries', (each) => {
-    const today = new Date();
-    const twoDaysFromNow = new Date();
-    twoDaysFromNow.setDate(today.getDate() + 2);
+        const today = new Date();
+        const twoDaysFromNow = new Date();
+        twoDaysFromNow.setDate(today.getDate() + 2);
 
-    const plnPickUp = each.plnPickUpDate ? new Date(each.plnPickUpDate) : null;
-    const estDelivery = each.estDeliveryDate ? new Date(each.estDeliveryDate) : null;
-    const lastUpdate = each.lastLocationDateTime ? new Date(each.lastLocationDateTime) : null;
-    if (each.shipmentNumber == 'SHP-964337'){
-        console.log(each);
-    }
-    // --- RED LOGIC ---
-    const isRed = (plnPickUp < today && !each.pickUpDate) || 
-                  (estDelivery < today && each.shipmentStatus !== 'Delivered');
-    var isAmber = null;
-    if (!isRed) {
-    // --- AMBER LOGIC ---
-    const lastUpdateThreshold = new Date();
-    lastUpdateThreshold.setDate(today.getDate() - 2);
-    
-    isAmber = (( estDelivery <= twoDaysFromNow && lastUpdate <= lastUpdateThreshold) ||
-                    (plnPickUp <= twoDaysFromNow && !each.shipmentNumber) ) && each.shipmentStatus !== 'Delivered';
-    }
-    if (isRed) {
-        each.criticality = 1; // Red
-    } else if (isAmber == true) {
-        each.criticality = 2; // Amber
-    } else {
-        each.criticality = 3; // Green
-    }
-    
+        const plnPickUp = each.plnPickUpDate ? new Date(each.plnPickUpDate) : null;
+        const estDelivery = each.estDeliveryDate ? new Date(each.estDeliveryDate) : null;
+        const lastUpdate = each.lastLocationDateTime ? new Date(each.lastLocationDateTime) : null;
+        if (each.shipmentNumber == 'SHP-964337') {
+            console.log(each);
+        }
+
+        // by default, make the button disabled, 
+        // if shipment number is generated but billing document is not generated yet, 
+        // then make button enabled
+        each.enableCreateBilling = false;
+        if (each.shipmentNumber && !each.billingDocument) {
+            each.enableCreateBilling = true
+        }
+
+        // by default, make the button disabled, 
+        // if shipment number is not generated yet, 
+        // then make button enabled
+        each.enableCreateShipping = false;
+        if (!each.shipmentNumber) {
+            each.enableCreateShipping = true
+        }
+
+        // --- RED LOGIC ---
+        const isRed = (plnPickUp < today && !each.pickUpDate) ||
+            (estDelivery < today && each.shipmentStatus !== 'Delivered');
+        var isAmber = null;
+        if (!isRed) {
+            // --- AMBER LOGIC ---
+            const lastUpdateThreshold = new Date();
+            lastUpdateThreshold.setDate(today.getDate() - 2);
+
+            isAmber = ((estDelivery <= twoDaysFromNow && lastUpdate <= lastUpdateThreshold) ||
+                (plnPickUp <= twoDaysFromNow && !each.shipmentNumber)) && each.shipmentStatus !== 'Delivered';
+        }
+        if (isRed) {
+            each.criticality = 1; // Red
+        } else if (isAmber == true) {
+            each.criticality = 2; // Amber
+        } else {
+            each.criticality = 3; // Green
+        }
+
     });
 
     // this.after('READ', 'Deliveries', each => {
