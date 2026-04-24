@@ -2,7 +2,14 @@ node_modules/
 target/
 _out/
 gen/
-*dist*
+
+# Build artifacts
+dist/
+app/**/dist/
+*.zip
+resources/
+
+*db.sqlite*
 .cdsrc-private.json
 default-*.json
 *.sqlite

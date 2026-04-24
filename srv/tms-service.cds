@@ -6,7 +6,6 @@ service ShipmentService {
         actions {
             // Action to create a shipment for multiple selected deliveries
             @(
-                //cds.odata.bindingparameter.name: '_it',
                 Common.SideEffects     : {TargetProperties: [
                     'in/shipmentStatus',
                     'in/shipmentNumber'
@@ -16,12 +15,8 @@ service ShipmentService {
             action createShipment() returns String;
 
             @(
-                //cds.odata.bindingparameter.name: '_it',
                 Common.SideEffects     : {TargetProperties: ['in/billingDocument']},
-                // Core.OperationAvailable: {$edmJson: {$Eq: [
-                //     {$Path: 'in/enableCreateBilling'},
-                //     true
-                // ]}},
+                //Core.OperationAvailable: {$edmJson: {$Eq: [ {$Path: 'in/enableCreateBilling'}, true ]}},
                 Core.OperationAvailable: in.enableCreateBilling
 
             )
