@@ -58,3 +58,21 @@ entity Items : cuid, managed {
     salesOrder         : String(10)     @title: 'Sales Order';
     salesOrderItem     : String(6)      @title: 'SO Item';
 }
+
+view CarrierShipmentCounts as
+    select from Deliveries {
+        key carrier                     : String(100),
+            count( * ) as shipmentCount : Integer,
+    }
+    where
+        carrier is not null
+    group by
+        carrier;
+
+view SourceShipmentCounts as
+    select from Deliveries {
+        key source                      : String(100),
+            count( * ) as shipmentCount : Integer,
+    }
+    group by
+        source;

@@ -2,11 +2,11 @@ using {com.logistics.shipment as my} from '../db/schema';
 
 service ShipmentService {
     @odata.draft.enabled
+    @cds.redirection.target
     entity Deliveries as projection on my.Deliveries
         actions {
             // Action to create a shipment for multiple selected deliveries
             @(
-                //cds.odata.bindingparameter.name: '_it',
                 Common.SideEffects     : {TargetProperties: [
                     'in/shipmentStatus',
                     'in/shipmentNumber'
@@ -16,12 +16,8 @@ service ShipmentService {
             action createShipment() returns String;
 
             @(
-                //cds.odata.bindingparameter.name: '_it',
                 Common.SideEffects     : {TargetProperties: ['in/billingDocument']},
-                // Core.OperationAvailable: {$edmJson: {$Eq: [
-                //     {$Path: 'in/enableCreateBilling'},
-                //     true
-                // ]}},
+                //Core.OperationAvailable: {$edmJson: {$Eq: [ {$Path: 'in/enableCreateBilling'}, true ]}},
                 Core.OperationAvailable: in.enableCreateBilling
 
             )
@@ -34,6 +30,8 @@ service ShipmentService {
                                 fileContent: String) returns String;
 
     entity Items      as projection on my.Items;
+    view CarrierShipmentCounts as select from my.CarrierShipmentCounts;
+    view SourceShipmentCounts as select from my.SourceShipmentCounts;
 }
 
 annotate ShipmentService.Items with @(UI.LineItem: [
@@ -134,7 +132,7 @@ annotate ShipmentService.Deliveries with @(
                 Label             : 'Create Commercial Invoice',
                 Action            : 'ShipmentService.createBilling',
                 InvocationGrouping: #ChangeSet,
-                // Ensures all IDs are sent in one request
+            // Ensures all IDs are sent in one request
             },
             {
                 $Type: 'UI.DataField',
@@ -191,10 +189,14 @@ annotate ShipmentService.Deliveries with @(
         ]
     },
     UI.SelectionFields         : [
+        carrier,
+        source,
         deliveryID,
         shipmentNumber,
         plant,
-        shipmentStatus
+        shipmentStatus,
+        plnPickUpDate,
+        estDeliveryDate
     ],
     UI.HeaderInfo              : {
         TypeName      : 'Delivery',
@@ -272,4 +274,90 @@ annotate ShipmentService.Deliveries with @(
         {Value: actDeliveryDate},
         {Value: lastLocationDateTime}
     ]}
+);
+
+annotate ShipmentService.Deliveries with @(Capabilities.FilterRestrictions: {FilterExpressionRestrictions: [
+    {
+        Property          : 'estDeliveryDate',
+        AllowedExpressions: 'SingleRange'
+    },
+    {
+        Property          : 'plnDeliveryDate',
+        AllowedExpressions: 'SingleRange'
+    },
+    {
+        Property          : 'plnPickUpDate',
+        AllowedExpressions: 'SingleRange'
+    },
+    {
+        Property          : 'actDeliveryDate',
+        AllowedExpressions: 'SingleRange'
+    },
+    {
+        Property          : 'shipmentCreationDate',
+        AllowedExpressions: 'SingleRange'
+    }
+]});
+
+//Aggregation and analytical annotations
+annotate ShipmentService.Deliveries with @(
+    Aggregation.ApplySupported                 : {
+        Transformations       : [
+            'aggregate',
+            'topcount',
+            'bottomcount',
+            'identity',
+            'concat',
+            'groupby',
+            'filter',
+            'expand',
+            'search'
+        ],
+        GroupableProperties   : [
+            carrier,
+            source,
+            shipmentNumber,
+            shipmentStatus,
+        ],
+        AggregatableProperties: [{
+            $Type   : 'Aggregation.AggregatablePropertyType',
+            Property: shipmentNumber,
+        }]
+    },
+    Analytics.AggregatedProperty #shipmentCount: {
+        $Type               : 'Analytics.AggregatedPropertyType',
+        AggregatableProperty: shipmentNumber,
+        AggregationMethod   : 'count',
+        Name                : 'shipmentCount',
+        ![@Common.Label]    : 'Shipment Count'
+    },
+    Aggregation.CustomAggregate #shipmentCount : 'Edm.Int32'
+) {
+    shipmentNumber  @Analytics.Measure  @Aggregation.default: #count
+};
+
+// Main chart
+annotate ShipmentService.Deliveries with @(
+    UI.Chart              : {
+        $Type              : 'UI.ChartDefinitionType',
+        Title              : 'Charts',
+        ChartType          : #Column,
+        Dimensions         : [carrier],
+        DimensionAttributes: [{
+            $Type    : 'UI.ChartDimensionAttributeType',
+            Dimension: carrier,
+            Role     : #Category
+        }],
+        DynamicMeasures    : [ ![@Analytics.AggregatedProperty#shipmentCount] ],
+        MeasureAttributes  : [{
+            $Type         : 'UI.ChartMeasureAttributeType',
+            DynamicMeasure: ![@Analytics.AggregatedProperty#shipmentCount],
+            Role          : #Axis1
+        }]
+    },
+    UI.PresentationVariant: {
+        $Type         : 'UI.PresentationVariantType',
+        Visualizations: ['@UI.Chart',
+        ],
+    }
 );
