@@ -41,6 +41,9 @@ module.exports = cds.service.impl(async function () {
         const today = new Date();
         const twoDaysFromNow = new Date();
         twoDaysFromNow.setDate(today.getDate() + 2);
+        const today = new Date();
+        const twoDaysFromNow = new Date();
+        twoDaysFromNow.setDate(today.getDate() + 2);
 
         const plnPickUp = each.plnPickUpDate ? new Date(each.plnPickUpDate) : null;
         const estDelivery = each.estDeliveryDate ? new Date(each.estDeliveryDate) : null;
@@ -84,6 +87,14 @@ module.exports = cds.service.impl(async function () {
         } else {
             each.criticality = 3; // Green
         }
+
+        // if (each.shipmentStatus == 'Delivered'){
+        //     console.log(each.actDeliveryDate, each.estDeliveryDate);
+        //     if (each.actDeliveryDate > each.estDeliveryDate ) each.onTimeDeliveryStatus = 1
+        //     else if (each.actDeliveryDate <= each.estDeliveryDate ) each.onTimeDeliveryStatus = 3
+        //     else each.onTimeDeliveryStatus = 2
+        // }
+        
 
     });
 
