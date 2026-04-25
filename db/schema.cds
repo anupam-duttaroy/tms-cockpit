@@ -29,14 +29,15 @@ entity Deliveries : cuid, managed {
     endCustomer                  : String(100) @title: 'End Customer';
     legType                      : String(20)  @title: 'Leg Type';
     remainingLegs                : Integer     @title: 'Remaining Legs';
-    whPickingStatus              : String(10)  @title : 'Warehouse Picking Status';
-    pgiStatus                    : String(10)  @title : 'PGI Status';
-    whPickingDate                : Date        @title : 'Warehouse Picking Date';
-    pgiDate                      : Date        @title : 'PGI Date';
-    shipmentCreationDate         : Date        @title : 'Shipment Creation Date';
-    actDeliveryDate              : Date        @title : 'Actual Delivery Date';
-    onTimeDeliveryStatus         : Integer     @title : 'On-Time Delivery';
-    trackingNumber               : String(35)  @title : 'Tracking Number';
+    whPickingStatus              : String(10)  @title: 'Warehouse Picking Status';
+    pgiStatus                    : String(10)  @title: 'PGI Status';
+    whPickingDate                : Date        @title: 'Warehouse Picking Date';
+    pgiDate                      : Date        @title: 'PGI Date';
+    shipmentCreationDate         : Date        @title: 'Shipment Creation Date';
+    actDeliveryDate              : Date        @title: 'Actual Delivery Date';
+    onTimeDeliveryStatus         : Integer     @title: 'On-Time Delivery';
+    trackingNumber               : String(35)  @title: 'Tracking Number';
+    plnPickUpMonth               : DateTime    @title: 'Planned Pick Up Month';
     virtual criticality          : Integer;
     virtual enableCreateBilling  : Boolean;
     virtual enableCreateShipping : Boolean;
@@ -76,3 +77,18 @@ view SourceShipmentCounts as
     }
     group by
         source;
+
+view DeliveryPickupMonthly as
+    select from Deliveries {
+        key ID,
+            plnPickUpDate,
+            cast(
+                substring(
+                    cast(
+                        plnPickUpDate as String
+                    ), 0, 7
+                ) || '-01' as Date
+            ) as plnPickUpMonth : Date @title: 'Pickup Month'
+    }
+    where
+        plnPickUpDate is not null;

@@ -32,6 +32,7 @@ service ShipmentService {
     entity Items      as projection on my.Items;
     view CarrierShipmentCounts as select from my.CarrierShipmentCounts;
     view SourceShipmentCounts as select from my.SourceShipmentCounts;
+    view DeliveryPickupMonthly as select from my.DeliveryPickupMonthly;
 }
 
 annotate ShipmentService.Items with @(UI.LineItem: [
@@ -196,7 +197,8 @@ annotate ShipmentService.Deliveries with @(
         plant,
         shipmentStatus,
         plnPickUpDate,
-        estDeliveryDate
+        estDeliveryDate,
+        plnPickUpMonth
     ],
     UI.HeaderInfo              : {
         TypeName      : 'Delivery',
@@ -285,10 +287,10 @@ annotate ShipmentService.Deliveries with @(Capabilities.FilterRestrictions: {Fil
         Property          : 'plnDeliveryDate',
         AllowedExpressions: 'SingleRange'
     },
-    {
-        Property          : 'plnPickUpDate',
-        AllowedExpressions: 'SingleRange'
-    },
+    // {
+    //     Property          : 'plnPickUpDate',
+    //     AllowedExpressions: 'SingleRange'
+    // },
     {
         Property          : 'actDeliveryDate',
         AllowedExpressions: 'SingleRange'
@@ -321,6 +323,7 @@ annotate ShipmentService.Deliveries with @(Aggregation.ApplySupported: {
         plnDeliveryDate,
         plnPickUpDate,
         plant,
+        plnPickUpMonth
     ],
     AggregatableProperties: [
         {Property: shipmentStatus},

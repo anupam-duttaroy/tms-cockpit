@@ -17,6 +17,8 @@ module.exports = cds.service.impl(async function () {
     });
 
     this.on('createShipment', 'Deliveries', async req => {
+
+        const tx = cds.transaction(req);
         // req.params contains the IDs of the selected deliveries
         const selectedDeliveries = req.params
         console.log("test", req.params);
@@ -28,9 +30,19 @@ module.exports = cds.service.impl(async function () {
 
         // Dummy Logic: Update status to 'In Transit' for all selected items
         for (const delivery of selectedDeliveries) {
+            var deliveryDetails = await tx.run(
+                SELECT.one.from(Deliveries).where({ ID: delivery.ID }),
+            );
+
+            let data = { "deliveryID": deliveryDetails.deliveryID, ID: deliveryDetails.ID }
+
+            const retData = await executeHttpRequest(
+                { destinationName: 'IS_SHPCRT' },
+                { method: 'post', url: '/http/tms/shipment', data: data });
+
             await UPDATE(Deliveries).set({
-                shipmentStatus: 'Shipment Created2', shipmentNumber: 'SHP-XX98',
-                pickUpDate: new Date().toISOString()
+                cshipmentStatus: 'Shipment Created', shipmentNumber: retData.data.shipmentNumber,
+                shipmentCreationDate: new Date().toISOString()
             }).where({ ID: delivery.ID })
         }
 
@@ -41,13 +53,32 @@ module.exports = cds.service.impl(async function () {
         const today = new Date();
         const twoDaysFromNow = new Date();
         twoDaysFromNow.setDate(today.getDate() + 2);
-        
+
         const plnPickUp = each.plnPickUpDate ? new Date(each.plnPickUpDate) : null;
         const estDelivery = each.estDeliveryDate ? new Date(each.estDeliveryDate) : null;
         const lastUpdate = each.lastLocationDateTime ? new Date(each.lastLocationDateTime) : null;
         if (each.shipmentNumber == 'SHP-964337') {
             console.log(each);
         }
+
+        // if (!each.plnPickUpMonth && each.plnPickUpDate) {
+        //     const d = new Date(each.plnPickUpDate);
+        //     each.plnPickUpMonth = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01`;
+        // }
+
+        //if (!each.plnPickUpMonth && each.plnPickUpDate) {
+        // console.log('plnPickUpMonth:', each.plnPickUpMonth, '| type:', typeof each.plnPickUpMonth);
+        // console.log('plnPickUpDate:', each.plnPickUpDate, '| type:', typeof each.plnPickUpDate);
+
+        // const d = new Date(each.plnPickUpDate);
+        //  each.plnPickUpMonth = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01T00:00:00Z`;
+
+        // const newdate = new Date(formattedDate);
+        // each.plnPickUpMonth = newdate;
+
+
+        // console.log('plnPickUpMonth (after):', each.plnPickUpMonth, '| type:', typeof each.plnPickUpMonth);
+        //}
 
         // by default, make the button disabled, 
         // if shipment number is generated but billing document is not generated yet, 
@@ -91,7 +122,7 @@ module.exports = cds.service.impl(async function () {
         //     else if (each.actDeliveryDate <= each.estDeliveryDate ) each.onTimeDeliveryStatus = 3
         //     else each.onTimeDeliveryStatus = 2
         // }
-        
+
 
     });
 

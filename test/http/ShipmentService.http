@@ -31,6 +31,22 @@ GET {{server}}/odata/v4/shipment/Deliveries?$count=true
 Authorization: Basic {{username}}:{{password}}
 
 
+### Deliveries
+# @name Deliveries_GET
+GET {{server}}/odata/v4/shipment/Deliveries?$select=plnPickUpMonth, plnPickUpDate&$count=true&$apply=filter(IsActiveEntity eq true)
+Authorization: Basic {{username}}:{{password}}
+
+### Deliveries
+# @name Deliveries_GET
+GET {{server}}/odata/v4/shipment/Deliveries?$apply=filter(IsActiveEntity eq true)/groupby((plnPickUpMonth),aggregate(shipmentNumber with count as shipmentCountNew))
+Authorization: Basic {{username}}:{{password}}
+
+### Deliveries
+# @name Deliveries_GET
+GET {{server}}/odata/v4/shipment/Deliveries?$orderby=plnPickUpMonth&$apply=filter(IsActiveEntity%20eq%20true)/groupby((plnPickUpMonth),aggregate(shipmentNumber%20with%20count%20as%20shipmentCountNew))
+Authorization: Basic {{username}}:{{password}}
+
+
 ### Deliveries Drafts GET
 # @name Deliveries_Drafts_GET
 GET {{server}}/odata/v4/shipment/Deliveries?$filter=(IsActiveEntity eq false)
