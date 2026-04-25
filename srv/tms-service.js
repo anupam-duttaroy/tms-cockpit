@@ -87,6 +87,31 @@ module.exports = cds.service.impl(async function () {
 
     });
 
+    this.before('READ', 'Deliveries', (req) => {
+        const query = req.query;
+
+        // Only proceed if SELECT exists
+        if (query.SELECT) {
+            const cols = query.SELECT.columns;
+
+            // If no columns specified, it's already SELECT *
+            if (!cols) return;
+
+            // Helper to check if column already exists
+            const hasColumn = (name) =>
+                cols.some(c => c.ref && c.ref[0] === name);
+
+            // Add fields if missing
+            if (!hasColumn('plnPickUpDate')) {
+                cols.push({ ref: ['plnPickUpDate'] });
+            }
+
+            if (!hasColumn('estDeliveryDate')) {
+                cols.push({ ref: ['estDeliveryDate'] });
+            }
+        }
+    });
+
     // this.after('READ', 'Deliveries', each => {
     //     if (each.remainingLegs === 0) {
     //         each.shipmentStatus = 'Delivered'
@@ -110,7 +135,19 @@ module.exports = cds.service.impl(async function () {
                 return req.error(400, `Invalid shipment Number ${shipmentNumber}`)
             }
 
-            await tx.run(UPDATE(Deliveries).set({ shipmentStatus: shipmentStatus }).where({ ID: shipmentDetails.ID }))
+            const today = new Date().toISOString().split('.')[0] + 'Z';
+            let onTimeDeliveryStatus;
+            shipmentDetails.actDeliveryDate = today;
+            if (shipmentStatus == 'Delivered') {
+                if (shipmentDetails.actDeliveryDate > shipmentDetails.estDeliveryDate) onTimeDeliveryStatus = 1
+                else if (shipmentDetails.actDeliveryDate <= shipmentDetails.estDeliveryDate) onTimeDeliveryStatus = 3
+                else onTimeDeliveryStatus = 2
+            }
+
+            await tx.run(UPDATE(Deliveries).set({
+                shipmentStatus: shipmentStatus,
+                onTimeDeliveryStatus: onTimeDeliveryStatus
+            }).where({ ID: shipmentDetails.ID }))
 
             let htmlContent = `<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
             <p>Hello,</p>

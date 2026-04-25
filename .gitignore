@@ -8,8 +8,11 @@ dist/
 app/**/dist/
 *.zip
 resources/
+app/tms-alp-test/
+app/project1
+db.sqlite-shm
+db.sqlite-wal
 
-*db.sqlite*
 .cdsrc-private.json
 default-*.json
 *.sqlite
