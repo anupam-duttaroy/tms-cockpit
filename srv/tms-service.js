@@ -41,10 +41,7 @@ module.exports = cds.service.impl(async function () {
         const today = new Date();
         const twoDaysFromNow = new Date();
         twoDaysFromNow.setDate(today.getDate() + 2);
-        const today = new Date();
-        const twoDaysFromNow = new Date();
-        twoDaysFromNow.setDate(today.getDate() + 2);
-
+        
         const plnPickUp = each.plnPickUpDate ? new Date(each.plnPickUpDate) : null;
         const estDelivery = each.estDeliveryDate ? new Date(each.estDeliveryDate) : null;
         const lastUpdate = each.lastLocationDateTime ? new Date(each.lastLocationDateTime) : null;

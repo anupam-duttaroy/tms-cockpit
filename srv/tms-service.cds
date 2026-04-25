@@ -161,9 +161,9 @@ annotate ShipmentService.Deliveries with @(
                 Value: shipmentNumber
             },
             {
-                $Type: 'UI.DataField',
-                Value: shipmentStatus,
-                Criticality: onTimeDeliveryStatus,
+                $Type                    : 'UI.DataField',
+                Value                    : shipmentStatus,
+                Criticality              : onTimeDeliveryStatus,
                 CriticalityRepresentation: #WithIcon
             },
             {
@@ -241,7 +241,7 @@ annotate ShipmentService.Deliveries with @(
         {Value: endCustomer},
         {Value: plant},
         {Value: shipmentStatus},
-    // { Value: packedDate }
+        {Value: billingDocument}
     ]},
     UI.FieldGroup #Logistics   : {Data: [
         {Value: shipmentNumber},
@@ -300,64 +300,32 @@ annotate ShipmentService.Deliveries with @(Capabilities.FilterRestrictions: {Fil
 ]});
 
 //Aggregation and analytical annotations
-annotate ShipmentService.Deliveries with @(
-    Aggregation.ApplySupported                 : {
-        Transformations       : [
-            'aggregate',
-            'topcount',
-            'bottomcount',
-            'identity',
-            'concat',
-            'groupby',
-            'filter',
-            'expand',
-            'search'
-        ],
-        GroupableProperties   : [
-            carrier,
-            source,
-            shipmentNumber,
-            shipmentStatus,
-        ],
-        AggregatableProperties: [{
-            $Type   : 'Aggregation.AggregatablePropertyType',
-            Property: shipmentNumber,
-        }]
-    },
-    Analytics.AggregatedProperty #shipmentCount: {
-        $Type               : 'Analytics.AggregatedPropertyType',
-        AggregatableProperty: shipmentNumber,
-        AggregationMethod   : 'count',
-        Name                : 'shipmentCount',
-        ![@Common.Label]    : 'Shipment Count'
-    },
-    Aggregation.CustomAggregate #shipmentCount : 'Edm.Int32'
-) {
-    shipmentNumber  @Analytics.Measure  @Aggregation.default: #count
-};
-
-// Main chart
-annotate ShipmentService.Deliveries with @(
-    UI.Chart              : {
-        $Type              : 'UI.ChartDefinitionType',
-        Title              : 'Charts',
-        ChartType          : #Column,
-        Dimensions         : [carrier],
-        DimensionAttributes: [{
-            $Type    : 'UI.ChartDimensionAttributeType',
-            Dimension: carrier,
-            Role     : #Category
-        }],
-        DynamicMeasures    : [ ![@Analytics.AggregatedProperty#shipmentCount] ],
-        MeasureAttributes  : [{
-            $Type         : 'UI.ChartMeasureAttributeType',
-            DynamicMeasure: ![@Analytics.AggregatedProperty#shipmentCount],
-            Role          : #Axis1
-        }]
-    },
-    UI.PresentationVariant: {
-        $Type         : 'UI.PresentationVariantType',
-        Visualizations: ['@UI.Chart',
-        ],
-    }
-);
+annotate ShipmentService.Deliveries with @(Aggregation.ApplySupported: {
+    Transformations       : [
+        'aggregate',
+        'topcount',
+        'bottomcount',
+        'identity',
+        'concat',
+        'groupby',
+        'filter',
+        'expand',
+        'search'
+    ],
+    GroupableProperties   : [
+        carrier,
+        source,
+        shipmentNumber,
+        shipmentStatus,
+        deliveryID,
+        plnDeliveryDate,
+        plnPickUpDate,
+        plant,
+    ],
+    AggregatableProperties: [
+        {Property: shipmentStatus},
+        {Property: plnDeliveryDate},
+        {Property: deliveryID},
+        {Property: shipmentNumber},
+    ]
+}, )
