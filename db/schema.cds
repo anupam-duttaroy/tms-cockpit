@@ -78,17 +78,17 @@ view SourceShipmentCounts as
     group by
         source;
 
-view DeliveryPickupMonthly as
-    select from Deliveries {
-        key ID,
-            plnPickUpDate,
-            cast(
-                substring(
-                    cast(
-                        plnPickUpDate as String
-                    ), 0, 7
-                ) || '-01' as Date
-            ) as plnPickUpMonth : Date @title: 'Pickup Month'
-    }
-    where
-        plnPickUpDate is not null;
+// view DeliveryPickupMonthly as
+//     select from Deliveries {
+//         key ID,
+//             plnPickUpDate,
+//             cast(
+//                 substring(
+//                     cast(
+//                         plnPickUpDate as String
+//                     ), 0, 7
+//                 ) || '-01' as Date
+//             ) as plnPickUpMonth : Date @title: 'Pickup Month'
+//     }
+//     where
+//         plnPickUpDate is not null;
