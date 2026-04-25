@@ -164,7 +164,7 @@ annotate ShipmentService.Deliveries with @(
                 $Type                    : 'UI.DataField',
                 Value                    : shipmentStatus,
                 Criticality              : onTimeDeliveryStatus,
-                CriticalityRepresentation: #WithIcon
+                CriticalityRepresentation: #WithoutIcon
             },
             {
                 $Type: 'UI.DataField',

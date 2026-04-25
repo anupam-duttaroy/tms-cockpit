@@ -73,9 +73,23 @@ modules:
       - tmscockpitfe.zip
       name: tmscockpitfe
       target-path: resources/
+    - artifacts:
+      - tmscockpitalp.zip
+      name: tmscockpitalp
+      target-path: resources/
 - name: tmscockpitfe
   type: html5
   path: app/tms-cockpit-fe
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: tmscockpitalp
+  type: html5
+  path: app/tms-cockpit-alp
   build-parameters:
     build-result: dist
     builder: custom
@@ -149,7 +163,7 @@ resources:
   type: org.cloudfoundry.managed-service
   parameters:
     service: connectivity
-    service-plan: lite    
+    service-plan: lite
 parameters:
   deploy_mode: html5-repo
   enable-parallel-deployments: true
