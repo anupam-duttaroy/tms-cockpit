@@ -27,7 +27,8 @@
     "watch-tms-cockpit-fe": "cds watch --open tmscockpitfe/index.html?sap-ui-xx-viewCache=false --livereload false",
     "undeploy": "cf undeploy tms-cockpit --delete-services --delete-service-keys --delete-service-brokers",
     "build": "rimraf resources mta_archives && mbt build --mtar archive",
-    "deploy": "cf deploy mta_archives/archive.mtar --retries 1"
+    "deploy": "cf deploy mta_archives/archive.mtar --retries 1",
+    "watch-tms-cockpit-alp": "cds watch --open tmscockpitalp/index.html?sap-ui-xx-viewCache=false --livereload false"
   },
   "private": true,
   "cds": {
@@ -64,6 +65,7 @@
     "app/*"
   ],
   "sapux": [
-    "app/tms-cockpit-fe"
+    "app/tms-cockpit-fe",
+    "app/tms-cockpit-alp"
   ]
 }
