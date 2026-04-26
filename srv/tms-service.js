@@ -9,12 +9,12 @@ require('dotenv').config();
 module.exports = cds.service.impl(async function () {
     const { Deliveries } = this.entities
 
-    this.before('SAVE', 'Deliveries', req => {
-        const { pickUpDate, estDeliveryDate } = req.data
-        if (pickUpDate && estDeliveryDate && pickUpDate > estDeliveryDate) {
-            req.error(400, 'Estimated Delivery Date cannot be before Pick Up Date')
-        }
-    });
+    // this.before('SAVE', 'Deliveries', req => {
+    //     const { pickUpDate, estDeliveryDate } = req.data
+    //     if (pickUpDate && estDeliveryDate && pickUpDate > estDeliveryDate) {
+    //         req.error(400, 'Estimated Delivery Date cannot be before Pick Up Date')
+    //     }
+    // });
 
     this.on('createShipment', 'Deliveries', async req => {
 
@@ -126,30 +126,30 @@ module.exports = cds.service.impl(async function () {
 
     });
 
-    this.before('READ', 'Deliveries', (req) => {
-        const query = req.query;
+    // this.before('READ', 'Deliveries', (req) => {
+    //     const query = req.query;
 
-        // Only proceed if SELECT exists
-        if (query.SELECT) {
-            const cols = query.SELECT.columns;
+    //     // Only proceed if SELECT exists
+    //     if (query.SELECT) {
+    //         const cols = query.SELECT.columns;
 
-            // If no columns specified, it's already SELECT *
-            if (!cols) return;
+    //         // If no columns specified, it's already SELECT *
+    //         if (!cols) return;
 
-            // Helper to check if column already exists
-            const hasColumn = (name) =>
-                cols.some(c => c.ref && c.ref[0] === name);
+    //         // Helper to check if column already exists
+    //         const hasColumn = (name) =>
+    //             cols.some(c => c.ref && c.ref[0] === name);
 
-            // Add fields if missing
-            if (!hasColumn('plnPickUpDate')) {
-                cols.push({ ref: ['plnPickUpDate'] });
-            }
+    //         // Add fields if missing
+    //         if (!hasColumn('plnPickUpDate')) {
+    //             cols.push({ ref: ['plnPickUpDate'] });
+    //         }
 
-            if (!hasColumn('estDeliveryDate')) {
-                cols.push({ ref: ['estDeliveryDate'] });
-            }
-        }
-    });
+    //         if (!hasColumn('estDeliveryDate')) {
+    //             cols.push({ ref: ['estDeliveryDate'] });
+    //         }
+    //     }
+    // });
 
     // this.after('READ', 'Deliveries', each => {
     //     if (each.remainingLegs === 0) {
