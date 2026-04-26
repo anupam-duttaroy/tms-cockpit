@@ -3,6 +3,11 @@ using {com.logistics.shipment as my} from '../db/schema';
 service ShipmentService {
     @odata.draft.enabled
     @cds.redirection.target
+    @Capabilities: {
+    InsertRestrictions.Insertable: false,
+    UpdateRestrictions.Updatable: true,
+    DeleteRestrictions.Deletable: false
+  }
     entity Deliveries as projection on my.Deliveries
         actions {
             // Action to create a shipment for multiple selected deliveries
@@ -287,10 +292,10 @@ annotate ShipmentService.Deliveries with @(Capabilities.FilterRestrictions: {Fil
         Property          : 'plnDeliveryDate',
         AllowedExpressions: 'SingleRange'
     },
-    // {
-    //     Property          : 'plnPickUpDate',
-    //     AllowedExpressions: 'SingleRange'
-    // },
+    {
+        Property          : 'plnPickUpDate',
+        AllowedExpressions: 'SingleRange'
+    },
     {
         Property          : 'actDeliveryDate',
         AllowedExpressions: 'SingleRange'
