@@ -281,3 +281,5 @@ GET {{server}}/odata/v4/shipment/ScanStates
 Authorization: Basic {{username}}:{{password}}
 
 
+###
+GET {{server}}/odata/v4/shipment/Deliveries(ID='faf45c42-435a-4004-aa1c-6ef421815ead',IsActiveEntity=true)

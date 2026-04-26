@@ -340,4 +340,11 @@ annotate ShipmentService.Deliveries with @(Aggregation.ApplySupported: {
         {Property: deliveryID},
         {Property: shipmentNumber},
     ]
-}, )
+}, );
+
+ annotate ShipmentService.Deliveries with { 
+    plnPickUpMonth @Common.Text: plnMonthName; 
+    plnPickUpMonth @Common.TextArrangement: #TextOnly;
+    estDeliveryMonth @Common.Text: estMonthName; 
+    estDeliveryMonth @Common.TextArrangement: #TextOnly;
+ };

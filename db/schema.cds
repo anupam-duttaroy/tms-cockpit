@@ -37,8 +37,10 @@ entity Deliveries : cuid, managed {
     actDeliveryDate              : Date        @title: 'Actual Delivery Date';
     onTimeDeliveryStatus         : Integer     @title: 'On-Time Delivery';
     trackingNumber               : String(35)  @title: 'Tracking Number';
-    plnPickUpMonth               : Date        @title: 'Planned Pick Up Month';
-    estDeliveryMonth             : Date        @title: 'Estimated Delivery Month';
+    plnPickUpMonth               : Date        @title: 'Planned Pick Up Week';
+    estDeliveryMonth             : Date        @title: 'Estimated Delivery Week';
+    plnMonthName                 : String(3)   @title: 'Pln Month Name';
+    estMonthName                 : String(3)   @title: 'Est Month Name';
     virtual criticality          : Integer;
     virtual enableCreateBilling  : Boolean;
     virtual enableCreateShipping : Boolean;
