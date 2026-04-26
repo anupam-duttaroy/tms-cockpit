@@ -9,8 +9,6 @@ modules:
   requires:
   - name: tms-cockpit-auth
   - name: tms-cockpit-db
-  - name: tms-cockpit-attachments
-  - name: tms-cockpit-malware-scanner
   - name: tms-cockpit-destination
   - name: tms-cockpit-connectivity
   provides:
@@ -116,18 +114,6 @@ resources:
   parameters:
     service: hana
     service-plan: hdi-shared
-- name: tms-cockpit-attachments
-  type: org.cloudfoundry.managed-service
-  parameters:
-    service: objectstore
-    service-plan: standard
-- name: tms-cockpit-malware-scanner
-  type: org.cloudfoundry.managed-service
-  parameters:
-    config:
-      auth: mTLS
-    service: malware-scanner
-    service-plan: clamav
 - name: tms-cockpit-destination
   type: org.cloudfoundry.managed-service
   parameters:

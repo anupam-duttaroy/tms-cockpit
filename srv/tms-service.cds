@@ -323,7 +323,7 @@ annotate ShipmentService.Deliveries with @(Aggregation.ApplySupported: {
         plnDeliveryDate,
         plnPickUpDate,
         plant,
-        //plnPickUpMonth,
+        plnPickUpMonth,
         estDeliveryDate
     ],
     AggregatableProperties: [

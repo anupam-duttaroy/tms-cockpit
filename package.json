@@ -2,7 +2,6 @@
   "name": "tms-cockpit",
   "version": "1.0.0",
   "dependencies": {
-    "@cap-js/attachments": "^3.12.0",
     "@cap-js/hana": "^2",
     "@sap-cloud-sdk/http-client": "^4.6.0",
     "@sap/cds": "^9",
@@ -52,7 +51,6 @@
         "auth": "xsuaa"
       },
       "destinations": true,
-      "malware-scanner": true,
       "connectivity": true
     },
     "server": {
