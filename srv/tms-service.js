@@ -41,12 +41,12 @@ module.exports = cds.service.impl(async function () {
                 { method: 'post', url: '/http/tms/shipment', data: data });
 
             await UPDATE(Deliveries).set({
-                cshipmentStatus: 'Shipment Created', shipmentNumber: retData.data.shipmentNumber,
+                shipmentStatus: 'Shipment Created', shipmentNumber: retData.data.shipmentNumber,
                 shipmentCreationDate: new Date().toISOString()
             }).where({ ID: delivery.ID })
         }
-
-        return `Successfully created shipment for ${selectedDeliveries.length} deliveries.`
+        
+        return req.notify(200, `Shipment ${retData?.data?.shipmentNumber} created successfully`)
     });
 
     this.after('READ', 'Deliveries', (each) => {
@@ -248,8 +248,9 @@ module.exports = cds.service.impl(async function () {
             };
 
             const retData = await executeHttpRequest(
-                { destinationName: process.env.API_DEST },
-                { method: 'post', url: process.env.BILLING_DOC_CREATE_API_URL, data: data },
+                { destinationName: process.env.API_DEST || 'S4HC_1' },
+                { method: 'post', url: process.env.BILLING_DOC_CREATE_API_URL || '/sap/opu/odata4/sap/api_billingdocument/srvd_a2x/sap/billingdocument/0001/BillingDocument/SAP__self.CreateFromSDDocument', 
+                    data: data },
                 { fetchCsrfToken: true });
 
             if (retData.status == 200) {
