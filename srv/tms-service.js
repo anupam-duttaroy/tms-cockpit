@@ -44,9 +44,11 @@ module.exports = cds.service.impl(async function () {
                 shipmentStatus: 'Shipment Created', shipmentNumber: retData.data.shipmentNumber,
                 shipmentCreationDate: new Date().toISOString()
             }).where({ ID: delivery.ID })
+
+            return req.notify(200, `Shipment ${retData?.data?.shipmentNumber} created successfully`)
         }
         
-        return req.notify(200, `Shipment ${retData?.data?.shipmentNumber} created successfully`)
+        
     });
 
     this.after('READ', 'Deliveries', async (each) => {

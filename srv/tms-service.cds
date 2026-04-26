@@ -4,7 +4,7 @@ service ShipmentService {
     @odata.draft.enabled
     @cds.redirection.target
     @Capabilities: {
-    InsertRestrictions.Insertable: false,
+    InsertRestrictions.Insertable: true,
     UpdateRestrictions.Updatable: true,
     DeleteRestrictions.Deletable: false
   }
@@ -48,6 +48,8 @@ annotate ShipmentService.Items with @(UI.LineItem: [
 ]);
 
 annotate ShipmentService.Deliveries with @(
+    UI.CreateHidden: true,
+    UI.DeleteHidden: true,
     // Data Point for Shipment Status
     UI.DataPoint #Status       : {
         Value      : shipmentStatus,

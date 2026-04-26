@@ -201,10 +201,10 @@ annotate service.Deliveries with @(
             Dimension: estDeliveryMonth,
             Role     : #Category,
         }, ],
-        DynamicMeasures    : ['@Analytics.AggregatedProperty#deliveryCountNew'],
+        DynamicMeasures    : ['@Analytics.AggregatedProperty#shipmentCountNew'],
         MeasureAttributes  : [{
             $Type         : 'UI.ChartMeasureAttributeType',
-            DynamicMeasure: '@Analytics.AggregatedProperty#deliveryCountNew',
+            DynamicMeasure: '@Analytics.AggregatedProperty#shipmentCountNew',
             Role          : #Axis1,
 
         }],
