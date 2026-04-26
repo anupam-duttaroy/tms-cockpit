@@ -49,16 +49,21 @@ module.exports = cds.service.impl(async function () {
         return req.notify(200, `Shipment ${retData?.data?.shipmentNumber} created successfully`)
     });
 
-    this.after('READ', 'Deliveries', (each) => {
+    this.after('READ', 'Deliveries', async (each) => {
         const today = new Date();
         const twoDaysFromNow = new Date();
         twoDaysFromNow.setDate(today.getDate() + 2);
 
-        const plnPickUp = each.plnPickUpDate ? new Date(each.plnPickUpDate) : null;
-        const estDelivery = each.estDeliveryDate ? new Date(each.estDeliveryDate) : null;
-        const lastUpdate = each.lastLocationDateTime ? new Date(each.lastLocationDateTime) : null;
-        if (each.shipmentNumber == 'SHP-964337') {
-            console.log(each);
+        const IDs = each.map(obj => obj.ID);
+        const rows = await SELECT.from(Deliveries).where({ ID: { in: IDs } });
+
+        rows.forEach((row, idx) => {
+        
+        const plnPickUp = row.plnPickUpDate ? new Date(row.plnPickUpDate) : null;
+        const estDelivery = row.estDeliveryDate ? new Date(row.estDeliveryDate) : null;
+        const lastUpdate = row.lastLocationDateTime ? new Date(row.lastLocationDateTime) : null;
+        if (row.shipmentNumber == 'SHP-964337') {
+            console.log(row);
         }
 
         // if (!each.plnPickUpMonth && each.plnPickUpDate) {
@@ -83,22 +88,22 @@ module.exports = cds.service.impl(async function () {
         // by default, make the button disabled, 
         // if shipment number is generated but billing document is not generated yet, 
         // then make button enabled
-        each.enableCreateBilling = false;
-        if (each.shipmentNumber && !each.billingDocument) {
-            each.enableCreateBilling = true
+        row.enableCreateBilling = false;
+        if (row.shipmentNumber && !row.billingDocument) {
+            row.enableCreateBilling = true
         }
 
         // by default, make the button disabled, 
         // if shipment number is not generated yet, 
         // then make button enabled
-        each.enableCreateShipping = false;
-        if (!each.shipmentNumber) {
-            each.enableCreateShipping = true
+        row.enableCreateShipping = false;
+        if (!row.shipmentNumber) {
+            row.enableCreateShipping = true
         }
 
         // --- RED LOGIC ---
-        const isRed = (plnPickUp < today && !each.pickUpDate) ||
-            (estDelivery < today && each.shipmentStatus !== 'Delivered');
+        const isRed = (plnPickUp < today && !row.pickUpDate) ||
+            (estDelivery < today && row.shipmentStatus !== 'Delivered');
         var isAmber = null;
         if (!isRed) {
             // --- AMBER LOGIC ---
@@ -106,14 +111,15 @@ module.exports = cds.service.impl(async function () {
             lastUpdateThreshold.setDate(today.getDate() - 2);
 
             isAmber = ((estDelivery <= twoDaysFromNow && lastUpdate <= lastUpdateThreshold) ||
-                (plnPickUp <= twoDaysFromNow && !each.shipmentNumber)) && each.shipmentStatus !== 'Delivered';
+                (plnPickUp <= twoDaysFromNow && !row.shipmentNumber)) && row.shipmentStatus !== 'Delivered';
         }
+        
         if (isRed) {
-            each.criticality = 1; // Red
+            row.criticality = 1; // Red
         } else if (isAmber == true) {
-            each.criticality = 2; // Amber
+            row.criticality = 2; // Amber
         } else {
-            each.criticality = 3; // Green
+            row.criticality = 3; // Green
         }
 
         // if (each.shipmentStatus == 'Delivered'){
@@ -122,7 +128,9 @@ module.exports = cds.service.impl(async function () {
         //     else if (each.actDeliveryDate <= each.estDeliveryDate ) each.onTimeDeliveryStatus = 3
         //     else each.onTimeDeliveryStatus = 2
         // }
-
+        each[idx].criticality = row.criticality;
+        });
+        console.log(rows);
 
     });
 
@@ -148,14 +156,21 @@ module.exports = cds.service.impl(async function () {
     //         if (!hasColumn('estDeliveryDate')) {
     //             cols.push({ ref: ['estDeliveryDate'] });
     //         }
+
+    //         const grp = query.SELECT.groupBy;
+    //         if (!grp) return;
+    //         const hasGroupby = (name) =>
+    //             cols.some(c => c.ref && c.ref[0] === name);
+    //         if (!hasGroupby('plnPickUpDate')) {
+    //             cols.push({ ref: ['plnPickUpDate'] });
+    //         }
+
+    //         if (!hasGroupby('estDeliveryDate')) {
+    //             cols.push({ ref: ['estDeliveryDate'] });
+    //         }
     //     }
     // });
 
-    // this.after('READ', 'Deliveries', each => {
-    //     if (each.remainingLegs === 0) {
-    //         each.shipmentStatus = 'Delivered'
-    //     }
-    // })
 
     this.on("updateShipmentStatus", async (req) => {
 
