@@ -103,14 +103,14 @@ module.exports = cds.service.impl(async function () {
 
         // --- RED LOGIC ---
         const isRed = (plnPickUp < today && !row.pickUpDate) ||
-            (estDelivery < today && row.shipmentStatus !== 'Delivered');
+            (estDelivery != null && estDelivery < today && row.shipmentStatus !== 'Delivered');
         var isAmber = null;
         if (!isRed) {
             // --- AMBER LOGIC ---
             const lastUpdateThreshold = new Date();
             lastUpdateThreshold.setDate(today.getDate() - 2);
 
-            isAmber = ((estDelivery <= twoDaysFromNow && lastUpdate <= lastUpdateThreshold) ||
+            isAmber = (((estDelivery != null && estDelivery <= twoDaysFromNow) && lastUpdate <= lastUpdateThreshold) ||
                 (plnPickUp <= twoDaysFromNow && !row.shipmentNumber)) && row.shipmentStatus !== 'Delivered';
         }
         
@@ -128,9 +128,13 @@ module.exports = cds.service.impl(async function () {
         //     else if (each.actDeliveryDate <= each.estDeliveryDate ) each.onTimeDeliveryStatus = 3
         //     else each.onTimeDeliveryStatus = 2
         // }
-        each[idx].criticality = row.criticality;
+
+        const index = each.findIndex(line => line.ID === row.ID);
+        each[index].criticality = row.criticality;
+        each[index].enableCreateBilling = row.enableCreateBilling;
+        each[index].enableCreateShipping = row.enableCreateShipping;
         });
-        console.log(rows);
+        console.log('test');
 
     });
 
@@ -200,7 +204,8 @@ module.exports = cds.service.impl(async function () {
 
             await tx.run(UPDATE(Deliveries).set({
                 shipmentStatus: shipmentStatus,
-                onTimeDeliveryStatus: onTimeDeliveryStatus
+                onTimeDeliveryStatus: onTimeDeliveryStatus,
+                actDeliveryDate: today
             }).where({ ID: shipmentDetails.ID }))
 
             let htmlContent = `<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
@@ -209,10 +214,10 @@ module.exports = cds.service.impl(async function () {
             <p>Regards,<br>
             <strong>${shipmentDetails.carrier} Delivery Team</strong></p>
         </div>`
-            const transporter = new SapCfMailer(process.env.MAIL_DEST);
+            const transporter = new SapCfMailer(process.env.MAIL_DEST || 'DebjaniMail');
 
             const result = await transporter.sendMail({
-                to: process.env.RECEIVER_MAIL,
+                to: process.env.RECEIVER_MAIL || 'anupam.duttaroy@innovervglobal.com',
                 subject: `Delivery completed for ${shipmentNumber}`,
                 html: htmlContent,
                 attachments: [{ filename: fileName, content: fileContent, encoding: "base64" }]
