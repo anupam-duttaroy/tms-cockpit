@@ -141,16 +141,22 @@
                                                 "valueList": "com.sap.vocabularies.Common.v1.ValueList#vlCarrier"
                                             }
                                         },
+                                        "plnPickUpMonth": {
+                                            "availability": "Default",
+                                            "visualFilter": {
+                                                "valueList": "com.sap.vocabularies.Common.v1.ValueList#vlplnPickUpMonth"
+                                            }
+                                        },
                                         "source": {
                                             "availability": "Default",
                                             "visualFilter": {
                                                 "valueList": "com.sap.vocabularies.Common.v1.ValueList#vlSource"
                                             }
                                         },
-                                        "plnPickUpMonth": {
+                                        "estDeliveryMonth": {
                                             "availability": "Default",
                                             "visualFilter": {
-                                                "valueList": "com.sap.vocabularies.Common.v1.ValueList#vlplnPickUpMonth"
+                                                "valueList": "com.sap.vocabularies.Common.v1.ValueList#vlestDeliveryMonth"
                                             }
                                         }
                                     }

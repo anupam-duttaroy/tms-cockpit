@@ -191,14 +191,15 @@ annotate ShipmentService.Deliveries with @(
     },
     UI.SelectionFields         : [
         carrier,
+        plnPickUpMonth,
         source,
+        estDeliveryMonth,
         deliveryID,
         shipmentNumber,
         plant,
         shipmentStatus,
         plnPickUpDate,
-        estDeliveryDate,
-        plnPickUpMonth
+        estDeliveryDate
     ],
     UI.HeaderInfo              : {
         TypeName      : 'Delivery',
@@ -324,7 +325,8 @@ annotate ShipmentService.Deliveries with @(Aggregation.ApplySupported: {
         plnPickUpDate,
         plant,
         plnPickUpMonth,
-        estDeliveryDate
+        estDeliveryDate,
+        estDeliveryMonth
     ],
     AggregatableProperties: [
         {Property: shipmentStatus},

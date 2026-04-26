@@ -9,7 +9,7 @@ using {
 entity Deliveries : cuid, managed {
     deliveryID                   : String(10)  @title: 'Delivery';
     billingDocument              : String(10)  @title: 'Commerical Invoice';
-    source                       : String(100) @title: 'Source';
+    source                       : String(100) @title: 'Source Location';
     destination                  : String(100) @title: 'Destination';
     plant                        : String(4)   @title: 'Plant';
     packedDate                   : Date        @title: 'Packed Date';
@@ -37,13 +37,14 @@ entity Deliveries : cuid, managed {
     actDeliveryDate              : Date        @title: 'Actual Delivery Date';
     onTimeDeliveryStatus         : Integer     @title: 'On-Time Delivery';
     trackingNumber               : String(35)  @title: 'Tracking Number';
-    plnPickUpMonth               : DateTime    @title: 'Planned Pick Up Month';
+    plnPickUpMonth               : Date        @title: 'Planned Pick Up Months';
+    estDeliveryMonth             : Date        @title: 'Estimated Delivery Months';
     virtual criticality          : Integer;
     virtual enableCreateBilling  : Boolean;
     virtual enableCreateShipping : Boolean;
     items                        : Composition of many Items
                                        on items.parent = $self;
-   // attachments                  : Composition of many Attachments;
+// attachments                  : Composition of many Attachments;
 }
 
 entity Items : cuid, managed {
@@ -62,7 +63,7 @@ entity Items : cuid, managed {
 
 view CarrierShipmentCounts as
     select from Deliveries {
-        key carrier                     : String(100),
+        key carrier                     : String(100) @title: 'Carrier',
             count( * ) as shipmentCount : Integer,
     }
     where
@@ -72,7 +73,7 @@ view CarrierShipmentCounts as
 
 view SourceShipmentCounts as
     select from Deliveries {
-        key source                      : String(100),
+        key source                      : String(100) @title: 'Source Location',
             count( * ) as shipmentCount : Integer,
     }
     group by

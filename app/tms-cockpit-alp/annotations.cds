@@ -19,7 +19,7 @@ annotate service.CarrierShipmentCounts with @(
         AggregatableProperty: shipmentCount,
         AggregationMethod   : 'sum',
         Name                : 'carrierShipCount',
-        ![@Common.Label]    : 'Shipment Count'
+        ![@Common.Label]    : 'Shipments'
     },
     UI.Chart #vfChartCarrierShipCount             : {
         $Type              : 'UI.ChartDefinitionType',
@@ -63,7 +63,7 @@ annotate service.SourceShipmentCounts with @(
         AggregatableProperty: shipmentCount,
         AggregationMethod   : 'sum',
         Name                : 'sourceShipCount',
-        ![@Common.Label]    : 'Shipment Count'
+        ![@Common.Label]    : 'Shipments'
     },
     UI.Chart #vfChartSourceShipCount             : {
         $Type              : 'UI.ChartDefinitionType',
@@ -164,6 +164,29 @@ annotate service.Deliveries with @(
         $Type         : 'UI.PresentationVariantType',
         Visualizations: ['@UI.Chart#vfChartPlannedPickedMonth'],
     },
+    UI.Chart #vfChartestDeliveryMonth           : {
+        $Type              : 'UI.ChartDefinitionType',
+        ChartType          : #Line,
+        Title              : 'Estimated Delivery',
+        Description        : 'Estimated Delivery',
+        Dimensions         : [estDeliveryMonth],
+        DimensionAttributes: [{
+            $Type    : 'UI.ChartDimensionAttributeType',
+            Dimension: estDeliveryMonth,
+            Role     : #Category,
+        }, ],
+        DynamicMeasures    : ['@Analytics.AggregatedProperty#shipmentCountNew'],
+        MeasureAttributes  : [{
+            $Type         : 'UI.ChartMeasureAttributeType',
+            DynamicMeasure: '@Analytics.AggregatedProperty#shipmentCountNew',
+            Role          : #Axis1,
+        }],
+    },
+
+    UI.PresentationVariant #pvqLineChartESTDelivery          : {
+        $Type         : 'UI.PresentationVariantType',
+        Visualizations: ['@UI.Chart#vfChartestDeliveryMonth'],
+    },
 );
 
 annotate service.Deliveries with {
@@ -196,6 +219,15 @@ annotate service.Deliveries with {
             LocalDataProperty: plnPickUpMonth,
             ValueListProperty: 'plnPickUpMonth',
         }, ],
+    };
+    estDeliveryMonth @Common.ValueList #vlestDeliveryMonth: {
+        $Type                       : 'Common.ValueListType',
+        CollectionPath              : 'Deliveries',
+        PresentationVariantQualifier: 'pvqLineChartESTDelivery',
+        Parameters                  : [{
+            $Type            : 'Common.ValueListParameterInOut',
+            LocalDataProperty: estDeliveryMonth,
+            ValueListProperty: 'estDeliveryMonth',
+        }, ],
     }
-
 };
