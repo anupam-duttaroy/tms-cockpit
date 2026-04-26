@@ -4,7 +4,7 @@ using {
     cuid,
     managed
 } from '@sap/cds/common';
-//using {Attachments} from '@cap-js/attachments';
+using {Attachments} from '@cap-js/attachments';
 
 entity Deliveries : cuid, managed {
     deliveryID                   : String(10)  @title: 'Delivery';
@@ -44,7 +44,7 @@ entity Deliveries : cuid, managed {
     virtual enableCreateShipping : Boolean;
     items                        : Composition of many Items
                                        on items.parent = $self;
-// attachments                  : Composition of many Attachments;
+    attachments                  : Composition of many Attachments;
 }
 
 entity Items : cuid, managed {
