@@ -36,12 +36,21 @@ annotate service.CarrierShipmentCounts with @(
             $Type         : 'UI.ChartMeasureAttributeType',
             DynamicMeasure: '@Analytics.AggregatedProperty#carrierShipCount',
             Role          : #Axis1,
+            DataPoint     : '@UI.DataPoint#CarrierDP'
         }]
     },
     UI.PresentationVariant #pvqCarrierShip        : {
         $Type         : 'UI.PresentationVariantType',
         Visualizations: ['@UI.Chart#vfChartCarrierShipCount']
     },
+
+    UI.DataPoint #CarrierDP                       : {
+        Value       : count,
+        Criticality : criticality,
+        Description : 'count Score',
+        MinimumValue: 0,
+        MaximumValue: 100
+    }
 );
 
 annotate service.SourceShipmentCounts with @(
@@ -79,12 +88,21 @@ annotate service.SourceShipmentCounts with @(
         MeasureAttributes  : [{
             $Type         : 'UI.ChartMeasureAttributeType',
             DynamicMeasure: '@Analytics.AggregatedProperty#sourceShipCount',
-            Role          : #Axis1
+            Role          : #Axis1,
+            DataPoint     : '@UI.DataPoint#SourceDP'
         }]
     },
     UI.PresentationVariant #pvqSourceShip        : {
         $Type         : 'UI.PresentationVariantType',
         Visualizations: ['@UI.Chart#vfChartSourceShipCount']
+    },
+
+    UI.DataPoint #SourceDP                       : {
+        Value       : count,
+        Criticality : criticality,
+        Description : 'count Score',
+        MinimumValue: 0,
+        MaximumValue: 100
     }
 );
 

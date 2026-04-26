@@ -37,8 +37,8 @@ entity Deliveries : cuid, managed {
     actDeliveryDate              : Date        @title: 'Actual Delivery Date';
     onTimeDeliveryStatus         : Integer     @title: 'On-Time Delivery';
     trackingNumber               : String(35)  @title: 'Tracking Number';
-    plnPickUpMonth               : Date        @title: 'Planned Pick Up Months';
-    estDeliveryMonth             : Date        @title: 'Estimated Delivery Months';
+    plnPickUpMonth               : Date        @title: 'Planned Pick Up Month';
+    estDeliveryMonth             : Date        @title: 'Estimated Delivery Month';
     virtual criticality          : Integer;
     virtual enableCreateBilling  : Boolean;
     virtual enableCreateShipping : Boolean;
@@ -64,7 +64,15 @@ entity Items : cuid, managed {
 view CarrierShipmentCounts as
     select from Deliveries {
         key carrier                     : String(100) @title: 'Carrier',
-            count( * ) as shipmentCount : Integer
+            count( * ) as shipmentCount : Integer,
+            case
+                when $self.shipmentCount > 5
+                     then 3
+                when $self.shipmentCount > 1
+                     then 2
+                when $self.shipmentCount > 0
+                     then 1
+            end        as criticality   : Integer
     }
     where
         carrier is not null
@@ -74,7 +82,15 @@ view CarrierShipmentCounts as
 view SourceShipmentCounts as
     select from Deliveries {
         key source                      : String(100) @title: 'Source Location',
-            count( * ) as shipmentCount : Integer
+            count( * ) as shipmentCount : Integer,
+            case
+                when $self.shipmentCount > 5
+                     then 3
+                when $self.shipmentCount > 1
+                     then 2
+                when $self.shipmentCount > 0
+                     then 1
+            end        as criticality   : Integer
     }
     group by
         source;
