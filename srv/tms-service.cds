@@ -32,7 +32,6 @@ service ShipmentService {
     entity Items      as projection on my.Items;
     view CarrierShipmentCounts as select from my.CarrierShipmentCounts;
     view SourceShipmentCounts as select from my.SourceShipmentCounts;
-//view DeliveryPickupMonthly as select from my.DeliveryPickupMonthly;
 }
 
 annotate ShipmentService.Items with @(UI.LineItem: [

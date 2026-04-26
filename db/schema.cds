@@ -64,7 +64,7 @@ entity Items : cuid, managed {
 view CarrierShipmentCounts as
     select from Deliveries {
         key carrier                     : String(100) @title: 'Carrier',
-            count( * ) as shipmentCount : Integer,
+            count( * ) as shipmentCount : Integer
     }
     where
         carrier is not null
@@ -74,22 +74,7 @@ view CarrierShipmentCounts as
 view SourceShipmentCounts as
     select from Deliveries {
         key source                      : String(100) @title: 'Source Location',
-            count( * ) as shipmentCount : Integer,
+            count( * ) as shipmentCount : Integer
     }
     group by
         source;
-
-// view DeliveryPickupMonthly as
-//     select from Deliveries {
-//         key ID,
-//             plnPickUpDate,
-//             cast(
-//                 substring(
-//                     cast(
-//                         plnPickUpDate as String
-//                     ), 0, 7
-//                 ) || '-01' as Date
-//             ) as plnPickUpMonth : Date @title: 'Pickup Month'
-//     }
-//     where
-//         plnPickUpDate is not null;
