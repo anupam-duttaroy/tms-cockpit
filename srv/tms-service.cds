@@ -18,6 +18,10 @@ service ShipmentService {
                 ]},
                 Core.OperationAvailable: in.enableCreateShipping
             )
+            @(requires: [
+                'TransportManager',
+                'system-user'
+            ])
             action createShipment()                                                                 returns String;
 
             @(
@@ -26,13 +30,26 @@ service ShipmentService {
                 Core.OperationAvailable: in.enableCreateBilling
 
             )
+            @(requires: [
+                'TransportManager',
+                'system-user'
+            ])
             action createBilling()                                                                  returns String;
 
+            @(requires: [
+                'TransportManager',
+                'system-user'
+            ])
+            @(Core.OperationAvailable: in.enableCreateBilling)
             action updateBillOfLading(trackingNumber: String(35) @Common.Label: 'Tracking Number' ) returns String;
 
 
         };
 
+    @(requires: [
+        'TransportManager',
+        'system-user'
+    ])
     action updateShipmentStatus(shipmentNumber: String,
                                 shipmentStatus: String,
                                 fileName: String,
@@ -43,6 +60,11 @@ service ShipmentService {
     view SourceShipmentCounts as select from my.SourceShipmentCounts;
     view EstimatedDeliveryDateCount as select from my.EstimatedDeliveryDateCount;
 
+    @odata.singleton
+    entity FeatureControl {
+        operationHidden  : Boolean;
+        operationEnabled : Boolean;
+    }
 }
 
 annotate ShipmentService.Items with @(UI.LineItem: [
@@ -138,21 +160,25 @@ annotate ShipmentService.Deliveries with @(
                 $Type             : 'UI.DataFieldForAction',
                 Label             : 'Create Shipment',
                 Action            : 'ShipmentService.createShipment',
-                InvocationGrouping: #ChangeSet // Ensures all IDs are sent in one request
+                InvocationGrouping: #ChangeSet,
+                // Ensures all IDs are sent in one request
+                ![@UI.Hidden]     : {$edmJson: {$Path: '/ShipmentService.EntityContainer/FeatureControl/operationHidden'}},
             },
             {
                 $Type             : 'UI.DataFieldForAction',
                 Label             : 'Create Commercial Invoice',
                 Action            : 'ShipmentService.createBilling',
                 InvocationGrouping: #ChangeSet,
-            // Ensures all IDs are sent in one request
+                // Ensures all IDs are sent in one request
+                ![@UI.Hidden]     : {$edmJson: {$Path: '/ShipmentService.EntityContainer/FeatureControl/operationHidden'}},
             },
             {
                 $Type             : 'UI.DataFieldForAction',
                 Label             : 'Update Tracking Number',
                 Action            : 'ShipmentService.updateBillOfLading',
                 InvocationGrouping: #ChangeSet,
-            // Ensures all IDs are sent in one request
+                // Ensures all IDs are sent in one request
+                ![@UI.Hidden]     : {$edmJson: {$Path: '/ShipmentService.EntityContainer/FeatureControl/operationHidden'}},
             },
             {
                 $Type: 'UI.DataField',
@@ -263,7 +289,8 @@ annotate ShipmentService.Deliveries with @(
         {Value: endCustomer},
         {Value: plant},
         {Value: shipmentStatus},
-        {Value: billingDocument}
+        {Value: billingDocument},
+        {Value: trackingNumber}
     ]},
     UI.FieldGroup #Logistics   : {Data: [
         {Value: shipmentNumber},

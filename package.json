@@ -38,7 +38,11 @@
         "db": {
           "kind": "sqlite",
           "users": {
-            "User01": {}
+            "user01": {
+              "roles": [
+                "TransportManager"
+              ]
+            }
           },
           "credentials": {
             "url": "db.sqlite"

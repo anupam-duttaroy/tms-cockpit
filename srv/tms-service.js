@@ -331,4 +331,20 @@ module.exports = cds.service.impl(async function () {
             return req.error(400, error.response?.data?.error?.message)
         }
     })
+
+    this.on('READ', "FeatureControl", async (req) => {
+        let operationHidden = true
+
+        // if user has role "Cashclearinguseractions" assigned to them make the action visible
+        if (req.user.is('TransportManager')) {
+            operationHidden = false
+        }
+
+        // if operationHidden -> true, actions hidden; false, actions visible 
+        return {
+            operationHidden: operationHidden,
+            operationEnabled: !operationHidden,
+        }
+    })
+
 })
