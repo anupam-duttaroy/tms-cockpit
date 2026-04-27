@@ -96,3 +96,15 @@ view SourceShipmentCounts as
     }
     group by
         source;
+
+view EstimatedDeliveryDateCount as
+    select from Deliveries {
+        key estDeliveryMonth            : Date      @title: 'Estimated Delivery Week',
+            estMonthName                : String(3) @title: 'Est Month Name',
+            count( * ) as shipmentCount : Integer,
+    }
+    where
+        estDeliveryMonth is not null
+    group by
+        estDeliveryMonth,
+        estMonthName;

@@ -4,10 +4,10 @@ service ShipmentService {
     @odata.draft.enabled
     @cds.redirection.target
     @Capabilities: {
-    InsertRestrictions.Insertable: true,
-    UpdateRestrictions.Updatable: true,
-    DeleteRestrictions.Deletable: false
-  }
+        InsertRestrictions.Insertable: true,
+        UpdateRestrictions.Updatable : true,
+        DeleteRestrictions.Deletable : false
+    }
     entity Deliveries as projection on my.Deliveries
         actions {
             // Action to create a shipment for multiple selected deliveries
@@ -37,6 +37,7 @@ service ShipmentService {
     entity Items      as projection on my.Items;
     view CarrierShipmentCounts as select from my.CarrierShipmentCounts;
     view SourceShipmentCounts as select from my.SourceShipmentCounts;
+    view EstimatedDeliveryDateCount as select from my.EstimatedDeliveryDateCount;
 }
 
 annotate ShipmentService.Items with @(UI.LineItem: [
@@ -48,8 +49,8 @@ annotate ShipmentService.Items with @(UI.LineItem: [
 ]);
 
 annotate ShipmentService.Deliveries with @(
-    UI.CreateHidden: true,
-    UI.DeleteHidden: true,
+    UI.CreateHidden            : true,
+    UI.DeleteHidden            : true,
     // Data Point for Shipment Status
     UI.DataPoint #Status       : {
         Value      : shipmentStatus,
@@ -342,9 +343,14 @@ annotate ShipmentService.Deliveries with @(Aggregation.ApplySupported: {
     ]
 }, );
 
- annotate ShipmentService.Deliveries with { 
-    plnPickUpMonth @Common.Text: plnMonthName; 
-    plnPickUpMonth @Common.TextArrangement: #TextOnly;
-    estDeliveryMonth @Common.Text: estMonthName; 
+annotate ShipmentService.Deliveries with {
+    plnPickUpMonth   @Common.Text           : plnMonthName;
+    plnPickUpMonth   @Common.TextArrangement: #TextOnly;
+    estDeliveryMonth @Common.Text           : estMonthName;
     estDeliveryMonth @Common.TextArrangement: #TextOnly;
- };
+};
+
+annotate ShipmentService.EstimatedDeliveryDateCount with {
+    estDeliveryMonth @Common.Text           : estMonthName;
+    estDeliveryMonth @Common.TextArrangement: #TextOnly;
+};
