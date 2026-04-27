@@ -18,7 +18,7 @@ service ShipmentService {
                 ]},
                 Core.OperationAvailable: in.enableCreateShipping
             )
-            action createShipment() returns String;
+            action createShipment()                                                                 returns String;
 
             @(
                 Common.SideEffects     : {TargetProperties: ['in/billingDocument']},
@@ -26,7 +26,11 @@ service ShipmentService {
                 Core.OperationAvailable: in.enableCreateBilling
 
             )
-            action createBilling()  returns String;
+            action createBilling()                                                                  returns String;
+
+            action updateBillOfLading(trackingNumber: String(35) @Common.Label: 'Tracking Number' ) returns String;
+
+
         };
 
     action updateShipmentStatus(shipmentNumber: String,
@@ -38,6 +42,7 @@ service ShipmentService {
     view CarrierShipmentCounts as select from my.CarrierShipmentCounts;
     view SourceShipmentCounts as select from my.SourceShipmentCounts;
     view EstimatedDeliveryDateCount as select from my.EstimatedDeliveryDateCount;
+
 }
 
 annotate ShipmentService.Items with @(UI.LineItem: [
@@ -139,6 +144,13 @@ annotate ShipmentService.Deliveries with @(
                 $Type             : 'UI.DataFieldForAction',
                 Label             : 'Create Commercial Invoice',
                 Action            : 'ShipmentService.createBilling',
+                InvocationGrouping: #ChangeSet,
+            // Ensures all IDs are sent in one request
+            },
+            {
+                $Type             : 'UI.DataFieldForAction',
+                Label             : 'Update Tracking Number',
+                Action            : 'ShipmentService.updateBillOfLading',
                 InvocationGrouping: #ChangeSet,
             // Ensures all IDs are sent in one request
             },
