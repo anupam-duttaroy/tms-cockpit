@@ -51,6 +51,7 @@ annotate service.CarrierShipmentCounts with @(
         MinimumValue: 0,
         MaximumValue: 100
     }
+
 );
 
 annotate service.SourceShipmentCounts with @(
@@ -96,7 +97,6 @@ annotate service.SourceShipmentCounts with @(
         $Type         : 'UI.PresentationVariantType',
         Visualizations: ['@UI.Chart#vfChartSourceShipCount']
     },
-
     UI.DataPoint #SourceDP                       : {
         Value       : count,
         Criticality : criticality,
@@ -104,6 +104,55 @@ annotate service.SourceShipmentCounts with @(
         MinimumValue: 0,
         MaximumValue: 100
     }
+);
+
+annotate service.EstimatedDeliveryDateCount with @(
+    Aggregation.ApplySupported                   : {
+        Transformations       : [
+            'aggregate',
+            'groupby',
+            'filter',
+            'identity'
+        ],
+        GroupableProperties   : [estDeliveryMonth, estMonthName],
+        AggregatableProperties: [{
+            $Type   : 'Aggregation.AggregatablePropertyType',
+            Property: shipmentCount,
+        }]
+    },
+    Analytics.AggregatedProperty #estDelvDateShipCount: {
+        $Type               : 'Analytics.AggregatedPropertyType',
+        AggregatableProperty: shipmentCount,
+        AggregationMethod   : 'sum',
+        Name                : 'estDelvDateShipCount',
+        ![@Common.Label]    : 'Shipments'
+    },
+
+UI.Chart #vfChartestDeliveryMonth              : {
+        $Type              : 'UI.ChartDefinitionType',
+        ChartType          : #Line,
+        Title              : 'Estimated Delivery',
+        Description        : 'Estimated Delivery',
+        Dimensions         : [estDeliveryMonth],
+        DimensionAttributes: [{
+            $Type    : 'UI.ChartDimensionAttributeType',
+            Dimension: estDeliveryMonth,
+            Role     : #Category,
+        }, ],
+        DynamicMeasures    : ['@Analytics.AggregatedProperty#estDelvDateShipCount'],
+        MeasureAttributes  : [{
+            $Type         : 'UI.ChartMeasureAttributeType',
+            DynamicMeasure: '@Analytics.AggregatedProperty#estDelvDateShipCount',
+            Role          : #Axis1,
+
+        }],
+    },
+
+    UI.PresentationVariant #pvqLineChartESTDelivery: {
+        $Type         : 'UI.PresentationVariantType',
+        Visualizations: ['@UI.Chart#vfChartestDeliveryMonth'],
+    },
+
 );
 
 
@@ -143,12 +192,12 @@ annotate service.Deliveries with @(
                 Role     : #Series,
             },
         ],
-        DynamicMeasures    : ['@Analytics.AggregatedProperty#shipmentCountNew',
+        DynamicMeasures    : ['@Analytics.AggregatedProperty#deliveryCountNew',
         ],
         MeasureAttributes  : [
             {
                 $Type         : 'UI.ChartMeasureAttributeType',
-                DynamicMeasure: '@Analytics.AggregatedProperty#shipmentCountNew',
+                DynamicMeasure: '@Analytics.AggregatedProperty#deliveryCountNew',
                 Role          : #Axis1,
             },
             {
@@ -182,6 +231,7 @@ annotate service.Deliveries with @(
             $Type         : 'UI.ChartMeasureAttributeType',
             DynamicMeasure: '@Analytics.AggregatedProperty#deliveryCountNew',
             Role          : #Axis1,
+
         }],
     },
 
@@ -189,6 +239,7 @@ annotate service.Deliveries with @(
         $Type         : 'UI.PresentationVariantType',
         Visualizations: ['@UI.Chart#vfChartPlannedPickedMonth'],
     },
+    
     UI.Chart #vfChartestDeliveryMonth              : {
         $Type              : 'UI.ChartDefinitionType',
         ChartType          : #Line,
@@ -200,18 +251,19 @@ annotate service.Deliveries with @(
             Dimension: estDeliveryMonth,
             Role     : #Category,
         }, ],
-        DynamicMeasures    : ['@Analytics.AggregatedProperty#deliveryCountNew'],
+        DynamicMeasures    : ['@Analytics.AggregatedProperty#shipmentCountNew'],
         MeasureAttributes  : [{
             $Type         : 'UI.ChartMeasureAttributeType',
-            DynamicMeasure: '@Analytics.AggregatedProperty#deliveryCountNew',
+            DynamicMeasure: '@Analytics.AggregatedProperty#shipmentCountNew',
             Role          : #Axis1,
+
         }],
     },
 
-    UI.PresentationVariant #pvqLineChartESTDelivery: {
-        $Type         : 'UI.PresentationVariantType',
-        Visualizations: ['@UI.Chart#vfChartestDeliveryMonth'],
-    },
+    // UI.PresentationVariant #pvqLineChartESTDelivery: {
+    //     $Type         : 'UI.PresentationVariantType',
+    //     Visualizations: ['@UI.Chart#vfChartestDeliveryMonth'],
+    // },
 );
 
 annotate service.Deliveries with {
@@ -247,7 +299,7 @@ annotate service.Deliveries with {
     };
     estDeliveryMonth @Common.ValueList #vlestDeliveryMonth: {
         $Type                       : 'Common.ValueListType',
-        CollectionPath              : 'Deliveries',
+        CollectionPath              : 'EstimatedDeliveryDateCount',
         PresentationVariantQualifier: 'pvqLineChartESTDelivery',
         Parameters                  : [{
             $Type            : 'Common.ValueListParameterInOut',

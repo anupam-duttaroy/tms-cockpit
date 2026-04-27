@@ -3,6 +3,11 @@ using {com.logistics.shipment as my} from '../db/schema';
 service ShipmentService {
     @odata.draft.enabled
     @cds.redirection.target
+    @Capabilities: {
+        InsertRestrictions.Insertable: true,
+        UpdateRestrictions.Updatable : true,
+        DeleteRestrictions.Deletable : false
+    }
     entity Deliveries as projection on my.Deliveries
         actions {
             // Action to create a shipment for multiple selected deliveries
@@ -32,6 +37,7 @@ service ShipmentService {
     entity Items      as projection on my.Items;
     view CarrierShipmentCounts as select from my.CarrierShipmentCounts;
     view SourceShipmentCounts as select from my.SourceShipmentCounts;
+    view EstimatedDeliveryDateCount as select from my.EstimatedDeliveryDateCount;
 }
 
 annotate ShipmentService.Items with @(UI.LineItem: [
@@ -43,6 +49,8 @@ annotate ShipmentService.Items with @(UI.LineItem: [
 ]);
 
 annotate ShipmentService.Deliveries with @(
+    UI.CreateHidden            : true,
+    UI.DeleteHidden            : true,
     // Data Point for Shipment Status
     UI.DataPoint #Status       : {
         Value      : shipmentStatus,
@@ -287,10 +295,10 @@ annotate ShipmentService.Deliveries with @(Capabilities.FilterRestrictions: {Fil
         Property          : 'plnDeliveryDate',
         AllowedExpressions: 'SingleRange'
     },
-    // {
-    //     Property          : 'plnPickUpDate',
-    //     AllowedExpressions: 'SingleRange'
-    // },
+    {
+        Property          : 'plnPickUpDate',
+        AllowedExpressions: 'SingleRange'
+    },
     {
         Property          : 'actDeliveryDate',
         AllowedExpressions: 'SingleRange'
@@ -333,4 +341,16 @@ annotate ShipmentService.Deliveries with @(Aggregation.ApplySupported: {
         {Property: deliveryID},
         {Property: shipmentNumber},
     ]
-}, )
+}, );
+
+annotate ShipmentService.Deliveries with {
+    plnPickUpMonth   @Common.Text           : plnMonthName;
+    plnPickUpMonth   @Common.TextArrangement: #TextOnly;
+    estDeliveryMonth @Common.Text           : estMonthName;
+    estDeliveryMonth @Common.TextArrangement: #TextOnly;
+};
+
+annotate ShipmentService.EstimatedDeliveryDateCount with {
+    estDeliveryMonth @Common.Text           : estMonthName;
+    estDeliveryMonth @Common.TextArrangement: #TextOnly;
+};

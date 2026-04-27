@@ -4,7 +4,7 @@ using {
     cuid,
     managed
 } from '@sap/cds/common';
-//using {Attachments} from '@cap-js/attachments';
+// using {Attachments} from '@cap-js/attachments';
 
 entity Deliveries : cuid, managed {
     deliveryID                   : String(10)  @title: 'Delivery';
@@ -37,14 +37,16 @@ entity Deliveries : cuid, managed {
     actDeliveryDate              : Date        @title: 'Actual Delivery Date';
     onTimeDeliveryStatus         : Integer     @title: 'On-Time Delivery';
     trackingNumber               : String(35)  @title: 'Tracking Number';
-    plnPickUpMonth               : Date        @title: 'Planned Pick Up Month';
-    estDeliveryMonth             : Date        @title: 'Estimated Delivery Month';
+    plnPickUpMonth               : Date        @title: 'Planned Pick Up Week';
+    estDeliveryMonth             : Date        @title: 'Estimated Delivery Week';
+    plnMonthName                 : String(3)   @title: 'Pln Month Name';
+    estMonthName                 : String(3)   @title: 'Est Month Name';
     virtual criticality          : Integer;
     virtual enableCreateBilling  : Boolean;
     virtual enableCreateShipping : Boolean;
     items                        : Composition of many Items
                                        on items.parent = $self;
-// attachments                  : Composition of many Attachments;
+    // attachments                  : Composition of many Attachments;
 }
 
 entity Items : cuid, managed {
@@ -94,3 +96,15 @@ view SourceShipmentCounts as
     }
     group by
         source;
+
+view EstimatedDeliveryDateCount as
+    select from Deliveries {
+        key estDeliveryMonth            : Date      @title: 'Estimated Delivery Week',
+            estMonthName                : String(3) @title: 'Est Month Name',
+            count( * ) as shipmentCount : Integer,
+    }
+    where
+        estDeliveryMonth is not null
+    group by
+        estDeliveryMonth,
+        estMonthName;
