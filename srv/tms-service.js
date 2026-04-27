@@ -47,8 +47,8 @@ module.exports = cds.service.impl(async function () {
 
             return req.notify(200, `Shipment ${retData?.data?.shipmentNumber} created successfully`)
         }
-        
-        
+
+
     });
 
     this.after('READ', 'Deliveries', async (each) => {
@@ -60,81 +60,81 @@ module.exports = cds.service.impl(async function () {
         const rows = await SELECT.from(Deliveries).where({ ID: { in: IDs } });
 
         rows.forEach((row, idx) => {
-        
-        const plnPickUp = row.plnPickUpDate ? new Date(row.plnPickUpDate) : null;
-        const estDelivery = row.estDeliveryDate ? new Date(row.estDeliveryDate) : null;
-        const lastUpdate = row.lastLocationDateTime ? new Date(row.lastLocationDateTime) : null;
-        if (row.shipmentNumber == 'SHP-964337') {
-            console.log(row);
-        }
 
-        // if (!each.plnPickUpMonth && each.plnPickUpDate) {
-        //     const d = new Date(each.plnPickUpDate);
-        //     each.plnPickUpMonth = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01`;
-        // }
+            const plnPickUp = row.plnPickUpDate ? new Date(row.plnPickUpDate) : null;
+            const estDelivery = row.estDeliveryDate ? new Date(row.estDeliveryDate) : null;
+            const lastUpdate = row.lastLocationDateTime ? new Date(row.lastLocationDateTime) : null;
+            if (row.shipmentNumber == 'SHP-964337') {
+                console.log(row);
+            }
 
-        //if (!each.plnPickUpMonth && each.plnPickUpDate) {
-        // console.log('plnPickUpMonth:', each.plnPickUpMonth, '| type:', typeof each.plnPickUpMonth);
-        // console.log('plnPickUpDate:', each.plnPickUpDate, '| type:', typeof each.plnPickUpDate);
+            // if (!each.plnPickUpMonth && each.plnPickUpDate) {
+            //     const d = new Date(each.plnPickUpDate);
+            //     each.plnPickUpMonth = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01`;
+            // }
 
-        // const d = new Date(each.plnPickUpDate);
-        //  each.plnPickUpMonth = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01T00:00:00Z`;
+            //if (!each.plnPickUpMonth && each.plnPickUpDate) {
+            // console.log('plnPickUpMonth:', each.plnPickUpMonth, '| type:', typeof each.plnPickUpMonth);
+            // console.log('plnPickUpDate:', each.plnPickUpDate, '| type:', typeof each.plnPickUpDate);
 
-        // const newdate = new Date(formattedDate);
-        // each.plnPickUpMonth = newdate;
+            // const d = new Date(each.plnPickUpDate);
+            //  each.plnPickUpMonth = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01T00:00:00Z`;
+
+            // const newdate = new Date(formattedDate);
+            // each.plnPickUpMonth = newdate;
 
 
-        // console.log('plnPickUpMonth (after):', each.plnPickUpMonth, '| type:', typeof each.plnPickUpMonth);
-        //}
+            // console.log('plnPickUpMonth (after):', each.plnPickUpMonth, '| type:', typeof each.plnPickUpMonth);
+            //}
 
-        // by default, make the button disabled, 
-        // if shipment number is generated but billing document is not generated yet, 
-        // then make button enabled
-        row.enableCreateBilling = false;
-        if (row.shipmentNumber && !row.billingDocument) {
-            row.enableCreateBilling = true
-        }
+            // by default, make the button disabled, 
+            // if shipment number is generated but billing document is not generated yet, 
+            // then make button enabled
+            row.enableCreateBilling = false;
+            if (row.shipmentNumber && !row.billingDocument) {
+                row.enableCreateBilling = true
+            }
 
-        // by default, make the button disabled, 
-        // if shipment number is not generated yet, 
-        // then make button enabled
-        row.enableCreateShipping = false;
-        if (!row.shipmentNumber) {
-            row.enableCreateShipping = true
-        }
+            // by default, make the button disabled, 
+            // if shipment number is not generated yet, 
+            // then make button enabled
+            row.enableCreateShipping = false;
+            if (!row.shipmentNumber) {
+                row.enableCreateShipping = true
+            }
 
-        // --- RED LOGIC ---
-        const isRed = (plnPickUp < today && !row.pickUpDate) ||
-            (estDelivery != null && estDelivery < today && row.shipmentStatus !== 'Delivered');
-        var isAmber = null;
-        if (!isRed) {
-            // --- AMBER LOGIC ---
-            const lastUpdateThreshold = new Date();
-            lastUpdateThreshold.setDate(today.getDate() - 2);
+            // --- RED LOGIC ---
+            const isRed = (plnPickUp < today && !row.pickUpDate) ||
+                (estDelivery != null && estDelivery < today && row.shipmentStatus !== 'Delivered');
+            var isAmber = null;
+            if (!isRed) {
+                // --- AMBER LOGIC ---
+                const lastUpdateThreshold = new Date();
+                lastUpdateThreshold.setDate(today.getDate() - 2);
 
-            isAmber = (((estDelivery != null && estDelivery <= twoDaysFromNow) && lastUpdate <= lastUpdateThreshold) ||
-                (plnPickUp <= twoDaysFromNow && !row.shipmentNumber)) && row.shipmentStatus !== 'Delivered';
-        }
-        
-        if (isRed) {
-            row.criticality = 1; // Red
-        } else if (isAmber == true) {
-            row.criticality = 2; // Amber
-        } else {
-            row.criticality = 3; // Green
-        }
+                isAmber = (((estDelivery != null && estDelivery <= twoDaysFromNow) && lastUpdate <= lastUpdateThreshold) ||
+                    (plnPickUp <= twoDaysFromNow && !row.shipmentNumber)) && row.shipmentStatus !== 'Delivered';
+            }
 
-        // if (each.shipmentStatus == 'Delivered'){
-        //     console.log(each.actDeliveryDate, each.estDeliveryDate);
-        //     if (each.actDeliveryDate > each.estDeliveryDate ) each.onTimeDeliveryStatus = 1
-        //     else if (each.actDeliveryDate <= each.estDeliveryDate ) each.onTimeDeliveryStatus = 3
-        //     else each.onTimeDeliveryStatus = 2
-        // }
+            if (isRed) {
+                row.criticality = 1; // Red
+            } else if (isAmber == true) {
+                row.criticality = 2; // Amber
+            } else {
+                row.criticality = 3; // Green
+            }
 
-        const index = each.findIndex(line => line.ID === row.ID);
-        each[index].criticality = row.criticality;
-        each[index].enableCreateBilling = row.enableCreateBilling;
-        each[index].enableCreateShipping = row.enableCreateShipping;
+            // if (each.shipmentStatus == 'Delivered'){
+            //     console.log(each.actDeliveryDate, each.estDeliveryDate);
+            //     if (each.actDeliveryDate > each.estDeliveryDate ) each.onTimeDeliveryStatus = 1
+            //     else if (each.actDeliveryDate <= each.estDeliveryDate ) each.onTimeDeliveryStatus = 3
+            //     else each.onTimeDeliveryStatus = 2
+            // }
+
+            const index = each.findIndex(line => line.ID === row.ID);
+            each[index].criticality = row.criticality;
+            each[index].enableCreateBilling = row.enableCreateBilling;
+            each[index].enableCreateShipping = row.enableCreateShipping;
         });
         console.log('test');
 
@@ -271,8 +271,10 @@ module.exports = cds.service.impl(async function () {
 
             const retData = await executeHttpRequest(
                 { destinationName: process.env.API_DEST || 'S4HC_1' },
-                { method: 'post', url: process.env.BILLING_DOC_CREATE_API_URL || '/sap/opu/odata4/sap/api_billingdocument/srvd_a2x/sap/billingdocument/0001/BillingDocument/SAP__self.CreateFromSDDocument', 
-                    data: data },
+                {
+                    method: 'post', url: process.env.BILLING_DOC_CREATE_API_URL || '/sap/opu/odata4/sap/api_billingdocument/srvd_a2x/sap/billingdocument/0001/BillingDocument/SAP__self.CreateFromSDDocument',
+                    data: data
+                },
                 { fetchCsrfToken: true });
 
             if (retData.status == 200) {
@@ -285,4 +287,20 @@ module.exports = cds.service.impl(async function () {
             return req.error(400, error.response?.data?.error?.message)
         }
     })
+
+    this.on('READ', "FeatureControl", async (req) => {
+        let operationHidden = true
+
+        // if user has role "Cashclearinguseractions" assigned to them make the action visible
+        if (req.user.is('TransportManager')) {
+            operationHidden = false
+        }
+
+        // if operationHidden -> true, actions hidden; false, actions visible 
+        return {
+            operationHidden: operationHidden,
+            operationEnabled: !operationHidden,
+        }
+    })
+
 })
