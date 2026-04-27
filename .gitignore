@@ -3,6 +3,8 @@ target/
 _out/
 gen/
 
+.vscode/settings.json
+
 # Build artifacts
 dist/
 app/**/dist/
