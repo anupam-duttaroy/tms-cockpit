@@ -126,10 +126,10 @@
                             "controlConfiguration": {
                                 "@com.sap.vocabularies.UI.v1.LineItem": {
                                     "tableSettings": {
-                                        "type": "AnalyticalTable",
+                                        "type": "GridTable",
                                         "selectionMode": "Single"
                                     }
-                                },
+                                },  
                                 "@com.sap.vocabularies.UI.v1.SelectionFields": {
                                     "useSemanticDateRange": true,
                                     "layout": "CompactVisual",
